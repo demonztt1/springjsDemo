@@ -9,7 +9,6 @@ const config={
     mode:"none",
     entry:  {
         xxx:__dirname + "/src/webapp/js/xxx.js"
-
     } ,//已多次提及的唯一入口文件*/
     // entry: entries(),
     output: {

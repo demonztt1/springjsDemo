@@ -1,0 +1,23 @@
+iframe {
+    height: 100%;
+    width: 100%;
+    frameborder:"no";
+    border:0;
+    marginwidth:0;
+    marginheight:0 ;
+    scrolling:"no" ;
+    allowtransparency:"yes";
+
+}
+
+
+#main-inner {
+    height: 100%;
+    padding-left: 20%;
+}
+
+
+.iframes{
+    height: 93%;
+    background:lemonchiffon;
+}

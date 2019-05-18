@@ -1,0 +1,8 @@
+.box{
+    color:#ff00ff;
+
+    height: 300px;
+    background:url("../img/test.jpg");
+    background-size:100px 100px;
+    background-repeat:no-repeat;
+}

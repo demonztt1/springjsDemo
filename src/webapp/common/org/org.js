@@ -1,0 +1,1 @@
+import org from './org.html'

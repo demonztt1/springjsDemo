@@ -1,6 +1,8 @@
-var express = require('express');
+import express  from 'express';
+
+import bodyParser  from 'body-parser';
+
 var app = express();
-var bodyParser = require('body-parser');
 
 
 //获取数据库连接对象

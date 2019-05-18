@@ -1,7 +1,9 @@
-var express = require('express');
+import  express  from 'express';
+import User  from '../entity/User';
+
+import  userService from '../service/user/userService'
 var router = express.Router();
-var userService=require('../service/user/userService')
-var User= require('../entity/User')
+
 //用户登录
 router.post('/login', (req,res) => {
     let user=new User();

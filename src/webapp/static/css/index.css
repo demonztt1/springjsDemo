@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body,
+html {
+    height: 100%;
+    font: 20px/40px "microsoft yahei";
+    color: white;
+}
+
+#container {
+    width: 90%;
+    margin: 0 auto;
+    height: 100%;
+}
+
+#header,
+#footer {
+    height: 5.5%;
+    background: deepskyblue;
+}
+
+#main {
+    height: 85%;
+}
+
+#center,
+#left,
+#right {
+    height: 100%;
+    float: left;
+}
+
+#center {
+    width: 100%;
+    background: lightgreen;
+}
+
+
+
+#left {
+    background: lightcoral;
+    width: 20%;
+    margin-left: -100%;
+}
+

@@ -36,12 +36,12 @@ test:
      - docker run -d --name $CONTAINER_NAME -p 8080:8080 $REGISTRY_IMAGE_TAG
   tags:
       - test #执行机器
-  when: manual
+  #when: manual
 deploy:
   stage: deploy
   script:
   - docker run -d --name $CONTAINER_NAME -p 8080:8080 $REGISTRY_IMAGE_TAG
-  when: manual #手动执行
+  #when: manual #手动执行
   only:
       - master #git分支
   tags:

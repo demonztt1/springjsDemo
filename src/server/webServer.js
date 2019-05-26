@@ -31,9 +31,6 @@ app.get('/',function(req,res){
 app.use(verify)
 app.use('/user',user)
 
-
-
-
 const port =  8080;
 app.listen(port, () => {
     console.log('Express server listening on port ' + port);

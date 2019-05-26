@@ -5,7 +5,7 @@ import  connection from  '../../../config/mysqldb'
 
 class  userDao{
     constructor(){
-        this.connection;
+        this.connection=connection;
     }
 
 
@@ -16,7 +16,7 @@ class  userDao{
         var addSqlParams = [ user.name ,user.pwd];
 
         //增
-        connection.query(addSql,addSqlParams,function (err, result) {
+        this.connection.query(addSql,addSqlParams,function (err, result) {
             if(err){
                 console.log('[INSERT ERROR] - ',err.message);
                 return;
@@ -24,14 +24,25 @@ class  userDao{
         });
     }
 
-    findById(id){
+    findById(id,callback){
+        let  sql = 'SELECT * FROM sys_user';
+        //查
+        this.connection.query(sql,function (err, result) {
+            if(err){
+                console.log('[SELECT ERROR] - ',err.message);
+                return;
+            }
+            //    console.log(params.id);
+            //把搜索值输出
+            callback(result);
 
+        });
     }
 
     findAll(){
         let  sql = 'SELECT * FROM sys_user';
         //查
-        connection.query(sql,function (err, result) {
+        this.connection.query(sql,function (err, result) {
             if(err){
                 console.log('[SELECT ERROR] - ',err.message);
                 return;
@@ -51,7 +62,7 @@ class  userDao{
         let editSqlParams = [ user.name,user.id ];
 
         //增
-        connection.query(editSql,editSqlParams,function (err, result) {
+        this.connection.query(editSql,editSqlParams,function (err, result) {
             if(err){
                 console.log('[UPDATE  ERROR] - ',err.message);
                 return;
@@ -59,3 +70,4 @@ class  userDao{
         });
     }
 }
+module.exports =userDao ;

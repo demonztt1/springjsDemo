@@ -1,24 +1,29 @@
-import  userDao from  '../../dao/user/userDao'
+import  UserDao from  '../../dao/user/userDao'
 
 class  userService{
     constructor(){
-        this.userDao=userDao;
+
+        this.userDao=new UserDao;
     }
 
 
     add(user){
-        userDao.add(user)
+        this.userDao.add(user)
     }
 
 
-    findById(user){
-        userDao.findById(user)
+    findById(user,callback){
+          this.userDao.findById(user,function (resData) {
+              callback(resData);
+          });
     }
 
     findAll(user){
-        userDao.findAll(user)
+        this.userDao.findAll(user)
     }
     edit(user){
-        userDao.edit(user);
+        this.userDao.edit(user);
     }
 }
+
+module.exports =userService ;

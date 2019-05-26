@@ -65,8 +65,17 @@ const config={
                             }
                         }
             ]
+            },
+            {
+                test: require.resolve("three/examples/js/controls/OrbitControls"),
+                use: "imports-loader?THREE=three"
+            },
+            {
+                test: require.resolve("three/examples/js/controls/OrbitControls"),
+                use: "exports-loader?THREE.OrbitControls"
             }
         ]
+
     },
     plugins: [
         new CleanWebpackPlugin(['dist/']), //清除旧数据

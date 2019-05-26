@@ -1,9 +1,10 @@
 import  express  from 'express';
 import User  from '../entity/User';
 
-import  userService from '../service/user/userService'
+import  UserService from '../service/user/userService'
 var router = express.Router();
 
+let userService =new UserService;
 //用户登录
 router.post('/login', (req,res) => {
     let user=new User();
@@ -19,14 +20,16 @@ router.post('/login', (req,res) => {
     }
     try{
 
-        userService.findById(user)
+         userService.findById(user,function (resUser) {
+           res.json({
+               message: '请求成功',
+               token: resUser
+           })
+           return;
+       })
 
-        let token = jwt.sign({name:user.name},secretkey,{expiresIn: 60*8});
-        res.json({
-            message: '请求成功',
-            token: token
-        })
-        return;
+       // let token = jwt.sign({name:user.name},secretkey,{expiresIn: 60*8});
+
     }catch (e) {
         console.log(e.stack)
         res.json({

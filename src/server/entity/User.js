@@ -7,3 +7,5 @@ class User{
         this.pwd;
     }
 }
+
+module.exports = User;

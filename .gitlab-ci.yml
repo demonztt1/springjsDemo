@@ -3,10 +3,10 @@ image: docker:latest
 # 设置变量
 variables:
     # 镜像启动后的容器名
-    CONTAINER_NAME: webPdf
-    REGISTRY_IMAGE_TAG: webPdf:master
+    CONTAINER_NAME: webpdf
+    REGISTRY_IMAGE_TAG: webpdf:master
     # 镜像启动后的容器名
-    CONTAINER_NAME: webPdf
+    CONTAINER_NAME: webpdf
 stages:
    - build
    - test

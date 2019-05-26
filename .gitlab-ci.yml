@@ -1,0 +1,48 @@
+# docker镜像
+image: docker:latest
+# 设置变量
+variables:
+    # 镜像启动后的容器名
+    CONTAINER_NAME: webPdf
+    REGISTRY_IMAGE_TAG: webPdf:master
+    # 镜像启动后的容器名
+    CONTAINER_NAME: webPdf
+stages:
+   - build
+   - test
+   - deploy
+
+build:
+    stage: build
+    script:
+        # 停止并删除正在使用当前镜像的容器
+        - if [ "$(docker ps -a | grep $CONTAINER_NAME)" ]; then
+        -  docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+        - fi
+        # 删除当前已存在的镜像
+        - if [ "$(docker images | grep $REGISTRY_IMAGE_TAG)" ]; then
+        -  docker rmi $REGISTRY_IMAGE_TAG
+        - fi
+        # 构建新的镜像
+       # - ping 127.0.0.1 -w 10
+        #- npm install --production
+        - docker build -t $REGISTRY_IMAGE_TAG .
+
+test:
+  stage: test
+  script:
+    # 本地启动容器进行测试
+     - ping 127.0.0.1 -w 10
+     - docker run -d --name $CONTAINER_NAME -p 8080:8080 $REGISTRY_IMAGE_TAG
+  tags:
+      - test #执行机器
+  when: manual
+deploy:
+  stage: deploy
+  script:
+  - docker run -d --name $CONTAINER_NAME -p 8080:8080 $REGISTRY_IMAGE_TAG
+  when: manual #手动执行
+  only:
+      - master #git分支
+  tags:
+      - ci-cd #执行机器  tag

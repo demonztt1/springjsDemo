@@ -1,2 +1,5 @@
 require('@babel/register') ({ presets: [ '@babel/env' ]})
-module.exports = require('./webServer')
+
+
+
+module.exports = require('./MyDecorator')

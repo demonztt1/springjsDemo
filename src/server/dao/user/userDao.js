@@ -1,8 +1,9 @@
-import  connection from  '../../../config/mysqldb'
+import  connection from  './src/config/mysqldb'
 
 
+import { Service } from './qguan/stc/com/1110111011101110/qguan/decorator/Service.js'
 
-
+@Service("userDao")
 class  userDao{
     constructor(){
         this.connection=connection;

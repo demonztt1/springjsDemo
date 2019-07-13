@@ -1,11 +1,11 @@
-import  UserDao from  '../../dao/user/userDao'
 
+import { Service } from './qguan/stc/com/1110111011101110/qguan/decorator/Service.js'
+import { Resource } from './qguan/stc/com/1110111011101110/qguan/decorator/Resource.js'
+
+
+@Service("userService")
+@Resource("userDao")
 class  userService{
-    constructor(){
-
-        this.userDao=new UserDao;
-    }
-
 
     add(user){
         this.userDao.add(user)

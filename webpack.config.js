@@ -78,12 +78,12 @@ const config={
 
     },
     plugins: [
-        new CleanWebpackPlugin(['dist/']), //清除旧数据
-     /*   new CopyWebpackPlugin([{  //拷贝
+        //new CleanWebpackPlugin(['dist/'])//清除旧数据
+       new CopyWebpackPlugin([{  //拷贝
             from: __dirname + '/src/plugins',
             to:__dirname + '/dist/plugins'
         },
-            ),*/
+            )/* ,*/
 
 
      /*  new HtmlWebpackPlugin({template: "src/webapp/index.html",

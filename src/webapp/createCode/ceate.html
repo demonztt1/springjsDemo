@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic SideMenu - jQuery EasyUI Demo</title>
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/demo.css">
+    <script type="text/javascript" src="../js/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+    <script src="../js/base/jszip.min.js" ></script>
+    <script src="../js/base/FileSaver.min.js" ></script>
+    <script src="xxx.js"  type="module"></script>
+
+</head>
+<body>
+概述<input id ="title"> </p>
+表名<input id ="tableName"> </p>
+上级包名<input id ="packageName"> </p>
+
+批量表名<textarea id="tableNameList">
+
+</textarea>
+
+<a style="cursor:pointer;" target="mainFrame" onclick="create()">创建</a>
+
+<a style="cursor:pointer;" target="mainFrame" onclick=" dgDataInit()">添加字段</a>
+
+<a style="cursor:pointer;" target="mainFrame" onclick=" createList()">批量创建</a>
+<table  id="dg1"  class="easyui-datagrid"> </table>
+<table  id="dg"  class="easyui-datagrid"> </table>
+<a style="cursor:pointer;" target="mainFrame" onclick="add('datagrid','datagrid','datagrid','datagrid.html')">datagrid</a>
+</body>
+
+<script>
+    //新增
+    function add(){
+        var diag = new top.Dialog();
+        diag.Drag=true;
+        diag.Title ="新增";
+        diag.URL = './xxx.html';
+        diag.Width = 500;
+        diag.Height = 500;
+        diag.Modal = true;				//有无遮罩窗口
+        diag. ShowMaxButton = true;	//最大化按钮
+        diag.ShowMinButton = true;		//最小化按钮
+        diag.CancelEvent = function(){ //关闭事件
+           /* if(diag.innerFrame.contentWindow.document.getElementById('zhongxin').style.display == 'none'){
+                list();
+            }*/
+            diag.close();
+        };
+        diag.OnLoad = function () {
+            diag.innerFrame.contentWindow.add(id);
+        };
+        diag.show();
+    }
+
+    $(function(){
+
+        dg1DataInit()
+    });
+   var $dgData={}
+    function  dgDataInit() {
+        $dgData['#dg']=$('#dg');
+        $dgData['#dg'].datagrid({
+            url: 'http://127.0.0.1:3001/data/tableFields?tableName='+$("#tableName").val(),
+            method: 'get',
+            title: '字段',
+            iconCls: 'icon-save',
+            width: 980,
+            height: 250,
+            fitColumns: true,
+            singleSelect: true,
+            columns:[[
+                {field:'COLUMN_ID',title:'序号',width:80},
+                {field:'COMMENTS',title:'标题',width:250},
+                {field:'COLUMN_NAME',title:'变量名',width:250,align:'right'},
+                {field:'DATA_TYPE',title:'数据库类型',width:150,align:'right'},
+                {field:'DATA_LENGTH',title:'长度',width:60},
+                {field:'NULLABLE',title:'是否可空',width:80,align:'center'},
+                {field:'DATA_DEFAULT',title:'默认值',width:200,align:'center'},
+                {field:'isGroup',title:'小组',width:120
+                    ,editor: {
+                        type: 'textbox'}
+                },
+                {field:'ShowType',title:'显示类型',width:120
+                    ,editor: {
+                        type: 'combobox',
+                        options: {
+                            valueField: 'VALUE',
+                            textField: 'TEXT',
+                            data:[{
+                                "VALUE":1,
+                                "TEXT":"文本"
+                            },{
+                                "VALUE":2,
+                                "TEXT":"数字"
+                            },{
+                                "VALUE":3,
+                                "TEXT":"单选"
+                            },{
+                                "VALUE":4,
+                                "TEXT":"多选"
+                            },{
+                                "VALUE":5,
+                                "TEXT":"日期"
+                            }]
+                        }   }
+                        },
+                {field:'isSelect',title:'是否下拉',width:120
+                    ,editor: {
+                        type: 'checkbox'}
+                },
+                {field:'dataDomain',title:'数据域',width:120
+                    ,editor: {
+                        type: 'textbox'}
+                },
+            ]],
+            onHeaderContextMenu: function(e, field){
+                e.preventDefault();
+                if (!cmenu){
+                    createColumnMenu();
+                }
+                cmenu.menu('show', {
+                    left:e.pageX,
+                    top:e.pageY
+                });
+            },onClickRow: function (rowIndex, rowData) {
+                detailClickRow(rowIndex)
+            },
+            contextMenus: [
+                {
+                    id: "m-edit", i18nText: "保存编辑", auth: "",
+                    onclick: function () {
+                        detailEndEdit()
+                    }
+                }
+            ]
+        });
+    }
+
+    function  dg1DataInit() {
+        $dgData['#dg1']=$('#dg1');
+        $dgData['#dg1'].datagrid({
+            url: 'createCode/ftl.json',
+            method: 'get',
+            title: '模板',
+            iconCls: 'icon-save',
+            width: 700,
+            height: 250,
+            fitColumns: true,
+            singleSelect: true,
+            columns:[[
+                {field:'ftlPath',title:'路径',width:120},
+                {field:'content',title:'内容',width:80,align:'right'},
+                {field:'loadType',title:'加载方式',width:80,align:'right'},
+                {field:'title',title:'标题',width:250},
+                {field:'packagePath',title:'文件路径+包名',width:250}
+
+            ]],
+            onHeaderContextMenu: function(e, field){
+                e.preventDefault();
+
+                cmenu.menu('show', {
+                    left:e.pageX,
+                    top:e.pageY
+                });
+            }
+        });
+    }
+
+
+    //明细编辑行索引
+    var detailEditIndex = undefined;
+
+    //明细结束编辑
+    function detailEndEdit() {
+        if (detailEditIndex == undefined) {
+            return true
+        }
+        if ($('#dg').datagrid('validateRow', detailEditIndex)) {
+            $('#dg').datagrid('endEdit', detailEditIndex);
+            detailEditIndex = undefined;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //明细点击行
+    function detailClickRow(index) {
+        if (detailEditIndex != index) {
+            if (detailEndEdit()) {
+                $('#dg').datagrid('selectRow', index);
+                $('#dg').datagrid('beginEdit', index);
+                detailEditIndex = index;
+            } else {
+                $('#dg').datagrid('selectRow', detailEditIndex);
+            }
+        }
+    }
+</script>
+</html>

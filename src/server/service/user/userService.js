@@ -1,14 +1,14 @@
 
-import { Service } from './qguan/stc/com/1110111011101110/qguan/decorator/Service.js'
-import { Resource } from './qguan/stc/com/1110111011101110/qguan/decorator/Resource.js'
-
+let  Service =qGuan.find("service")
+let  Resource =qGuan.find("resource")
 
 @Service("userService")
 @Resource("userDao")
 class  userService{
 
     add(user){
-        this.userDao.add(user)
+        console.log("add")
+      // this.userDao.add(user)
     }
 
 

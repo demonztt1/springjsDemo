@@ -1,6 +1,6 @@
 import  tabs from './tabs.html'
-import tabsss from  '../../static/css/tabs.css'
-import iframes from  '../../static/css/iframes.css'
+import tabsss from '../../../static/css/tabs.css'
+import iframes from '../../../static/css/iframes.css'
 import jquery from 'jquery'
 window.$=jquery;
 window.tabAddHandler=tabAddHandler;

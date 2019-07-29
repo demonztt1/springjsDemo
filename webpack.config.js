@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin=require('clean-webpack-plugin');
+
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin=require('copy-webpack-plugin');
 var glob = require('glob')
 
@@ -73,16 +74,30 @@ const config={
             {
                 test: require.resolve("three/examples/js/controls/OrbitControls"),
                 use: "exports-loader?THREE.OrbitControls"
+            },
+            // 配置js/jsx语法解析
+            {
+                test: /\.jsx$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                query: {
+                    presets: ["@babel/preset-react", "@babel/preset-env", "mobx"]
+                }
             }
         ]
 
     },
     plugins: [
-        //new CleanWebpackPlugin(['dist/'])//清除旧数据
+      /*  new CleanWebpackPlugin({
+            root: __dirname+'/dist/',
+            verbose: true,
+            cleanOnceBeforeBuildPatterns: ['**!/!*', '!static-files*'],
+            dry: false
+        }),*///清除旧数据
        new CopyWebpackPlugin([{  //拷贝
-            from: __dirname + '/src/plugins',
-            to:__dirname + '/dist/plugins'
-        },
+            from: __dirname + '/src/static',
+            to:__dirname + '/dist/static'
+        }]
             )/* ,*/
 
 
@@ -94,14 +109,14 @@ const config={
     devServer:{
         contentBase: path.join(__dirname,"/dist"),
         compress:true,
-        port:7070/*,
-        host:'127.0.0.1',
-        proxy:{  //代理
-            "/loginController":{
-                target:target,
-                changeOrigin:true
-            }
-        }*/
+        port:7070,
+        host:'0.0.0.0',
+        /* proxy:{  //代理
+             "/loginController":{
+                 target:target,
+                 changeOrigin:true
+             }
+         }*/
     }
 }
 
@@ -113,17 +128,19 @@ var entries= function () {
     var entryFiles = glob.sync(jsDir + '/**/*.{js,jsx}')
     for (var i = 0; i < entryFiles.length; i++) {
         var filePath = entryFiles[i];
-        var fpath = filePath.substring(filePath.lastIndexOf('\/webapp\/') + 1, filePath.lastIndexOf('.')).replace("webapp/","");
+        var fpath = filePath.substring(filePath.lastIndexOf('\/webapp\/') + 1).replace("webapp/","");
+        var fpathb =  filePath.substring(filePath.lastIndexOf('\/webapp\/') + 1, filePath.lastIndexOf('.')).replace("webapp/","");;
         var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'));
         config.entry[filename]=__dirname + "/src/webapp/"+fpath;
         config.plugins.push(
             new HtmlWebpackPlugin( {
-                template: "src/webapp/"+fpath+".html",
-                filename:fpath+".html",
+                template: "src/webapp/"+fpathb+".html",
+                filename:fpathb+".html",
                 chunks:[filename]
             } )
         )
     }
 }
 entries(); //批量添加
+
 module.exports = config

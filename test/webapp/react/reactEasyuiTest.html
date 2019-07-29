@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="/static/js/standalone/babel.js"></script>
+</head>
+<body>
+
+<div id="root">sss</div>
+
+<script       type="module">
+    const  code=`
+function testable(isTestable) {
+    debugger;
+    console.log(isTestable);
+    return function(target) {
+        target.isTestable = isTestable;
+    }
+}
+@testable("xxxxx","xxxx")
+class MyClass {}
+    debugger;
+new MyClass()
+
+`
+    const  code2=`
+import  runApplication   from '../../static/js/qguan/com/1110111011101110/qguan/QGuanRunApplication.js'
+   debugger;
+@runApplication()
+class MyClass {}
+
+`
+    let  options= {
+        "plugins": [
+            ["proposal-decorators" , { "legacy": true }],
+            ["syntax-dynamic-import"]
+
+        ]
+    }
+    var output = Babel.transform(
+        code2,options
+
+    );
+    debugger;
+    /*eval(output.code)
+    console.log(output.code);*/
+
+    function loadJs(code,callback){
+        var head = document.getElementsByTagName('head')[0];
+        var script=document.createElement('script');
+        script.type="module";
+        if(typeof(callback)!="undefined"){
+            if(script.readyState){
+                script.onreadystatechange=function(){
+                    if(script.readyState == "loaded" || script.readyState == "complete"){
+                        script.onreadystatechange=null;
+                        callback();
+                    }
+                }
+            }else{
+                script.onload=function(){
+                    callback();
+                }
+            }
+        }
+        script.innerHTML=code
+        head.appendChild(script);
+    }
+    loadJs(output.code,function(){
+        alert('done');
+    });
+
+</script>
+</body>
+</html>

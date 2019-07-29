@@ -1,10 +1,9 @@
 
 
-import { Controller } from './qguan/stc/com/1110111011101110/qguan/http/Controller.js'
-
-import { Resource } from './qguan/stc/com/1110111011101110/qguan/decorator/Resource.js'
-
 import User  from  './src/server/entity/User.js'
+let  Controller =qGuan.find("controller")
+let  Resource =qGuan.find("resource")
+
 
 @Controller("/user")
 @Resource("userService")
@@ -25,7 +24,7 @@ class UserCtrl{
             return;
         }
         try{
-
+            this.userService.add();
             res.write(JSON.stringify({
                 message: '请求成功',
                 token: "xxxxxx"

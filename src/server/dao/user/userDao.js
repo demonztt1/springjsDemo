@@ -1,7 +1,7 @@
 import  connection from  './src/config/mysqldb'
 
 
-import { Service } from './qguan/stc/com/1110111011101110/qguan/decorator/Service.js'
+let  Service =qGuan.find("service")
 
 @Service("userDao")
 class  userDao{

@@ -1,4 +1,4 @@
-import   toCamelCaseVer     from './toCamelCaseVer.js'
+import   toCamelCaseVer     from '../../static/js/create/toCamelCaseVer.js'
 //import   JSZip     from  './jszip.min.js'
 //console.log(toCamelCaseVer.to("xxxx_xxx_xxx",true));
 window.create=create

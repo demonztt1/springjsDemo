@@ -3,36 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <title>Hello React!</title>
-
-    <script src="/static/js/standalone/babel.js"></script>
+    <!--<script src="/static/js/react/umd/react.development.js"></script>
+    <script src="/static/js/react-dom/umd/react-dom.development.js"></script>-->
+<script src="/static/js/stage5.js"></script>
+   <script src="/static/js/standalone/babel.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
 </head>
 <body>
 
-<div id="root">sss</div>
+<div id="container" style="padding: 24px"></div>
+<div id="root">ss</div>
+<script>
+    var mountNode = document.getElementById('container');
+</script>
 
 <script       type="module">
-    const  code=`
-function testable(isTestable) {
-    debugger;
-    console.log(isTestable);
-    return function(target) {
-        target.isTestable = isTestable;
-    }
-}
-@testable("xxxxx","xxxx")
-class MyClass {}
-    debugger;
-new MyClass()
-
-`
     const  code2=`
-import  runApplication   from '../../static/js/qguan/com/1110111011101110/qguan/QGuanRunApplication.js'
+import  runApplication   from '/static/js/qguan/stc/com/1110111011101110/qguan/QGuanRunApplication.js'
 
 @runApplication()
 class MyClass {}
-
-console.log()
-
 `
   let  options= {
         "plugins": [
@@ -43,21 +33,12 @@ console.log()
     }
     var output = Babel.transform(
         code2,options
-
-
-
     );
-    debugger;
-    const inBrowser = typeof global !== 'undefined'
-
-    /*eval(output.code)
-    console.log(output.code);*/
-
     function loadJs(code,callback){
         var head = document.getElementsByTagName('head')[0];
         var script=document.createElement('script');
         script.type="module";
-        if(typeof(callback)!="undefined"){
+      /*  if(typeof(callback)!="undefined"){
             if(script.readyState){
                 script.onreadystatechange=function(){
                     if(script.readyState == "loaded" || script.readyState == "complete"){
@@ -70,7 +51,7 @@ console.log()
                     callback();
                 }
             }
-        }
+        }*/
         script.innerHTML=code
         head.appendChild(script);
     }

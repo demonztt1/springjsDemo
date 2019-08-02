@@ -7,11 +7,11 @@ import iframes from '../static/css/iframes.css'
 import tree from '../static/css/tree.css'
 
 import jquery from 'jquery'
-
+window.$=jquery;
 import React, { Component } from 'react';
 //import { Button ,Menu , SubMenu }from 'antd';
 import { render } from 'react-dom';
-window.$=jquery;
+
 import 'antd/dist/antd.css';
 //import './index.css';
 import { Menu, Icon, Switch } from 'antd';
@@ -26,7 +26,7 @@ class Sider extends React.Component {
                     {key:2,pid:0,name:'模板列表',url:'/createCode/ceateFtlList.html'},
                     {key:3,pid:0,name:'字段列表',url:'/createCode/ceateFieldList.html'},
                     {key:4,pid:0,name:'生成代码',url:'/createCode/ceateList.html'},
-                    {key:5,pid:0,name:'张三',url:''},
+                    {key:5,pid:0,name:'qguan',url:'/react/qguan/reactEasyuiTest.html'},
                     {key:6,pid:0,name:'张三1',url:''},
                     {key:7,pid:6,name:'张三11'}
 

@@ -2,7 +2,7 @@
 let  Service =qGuan.find("service");
 let Modular=qGuan.find("modular");
 let ModularAop=qGuan.find("modularAop");
-@Modular("AAA")
+@Service("AAA")
 export default class AAA extends React.Component {
 
     constructor(props) {
@@ -13,6 +13,12 @@ export default class AAA extends React.Component {
             numbers:[1, 2, 3, 4, 5]
         };
         this.handleInputChange = this.handleInputChange.bind(this);
+       this.render=this.render;
+        this.setState=this.setState;
+        this.NumberList=this.NumberList;
+        this.updateComponent=this.updateComponent;
+
+
     }
 
     NumberList(props) {

@@ -32,18 +32,28 @@ export default   class  AopProxy    {
     get(trapTarget, key, receiver) {
         let oldValue = trapTarget[key];
         let fun=  this.findFuns(key);
-        trapTarget[key] = function () {
-            fun.before.apply(trapTarget, arguments);
-            let ret;
-            try {
-                 ret = oldValue.call(trapTarget,key, [...arguments]);
-            }catch (err){
-                fun.afterThrowing(err);
-            }
+        if(!trapTarget[key]){
+            return trapTarget[key];
+        }
 
-            fun.after.call(trapTarget,key, [...arguments]);
-            return ret
-        };
+        if(trapTarget[key].type!="function"){
+            fun.before.apply(trapTarget, arguments);
+            return trapTarget[key];;
+        }
+            trapTarget[key] = function () {
+                fun.before.apply(trapTarget, arguments);
+                let ret;
+                try {
+                    ret = oldValue.call(trapTarget,key, [...arguments]);
+                }catch (err){
+                    fun.afterThrowing(err);
+                }
+
+                fun.after.call(trapTarget,key, [...arguments]);
+                return ret
+            };
+
+
         let res= Reflect.get(trapTarget, key, receiver);
         return res;
         }

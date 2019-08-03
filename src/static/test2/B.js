@@ -11,5 +11,4 @@ constructor(){
 }
 // 加载组件到 DOM 元素 mountNode
 const b=qGuan.find("B");
-debugger;
-ReactDOM.render(b.AAA,  document.getElementById('root'));
+ReactDOM.render(<b.AAA></b.AAA>,  document.getElementById('root'));

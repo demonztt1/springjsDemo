@@ -35,8 +35,8 @@ export default   class  AopProxy    {
         if(!trapTarget[key]){
             return trapTarget[key];
         }
+      if(trapTarget[key].type!="function"){
 
-        if(trapTarget[key].type!="function"){
             fun.before.apply(trapTarget, arguments);
             return trapTarget[key];;
         }
@@ -52,8 +52,6 @@ export default   class  AopProxy    {
                 fun.after.call(trapTarget,key, [...arguments]);
                 return ret
             };
-
-
         let res= Reflect.get(trapTarget, key, receiver);
         return res;
         }

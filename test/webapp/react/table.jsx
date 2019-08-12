@@ -1,69 +1,14 @@
-import ceateFtlList  from './ceateFtlList.html'
-import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu} from 'antd';
-import { render } from 'react-dom';
-import jquery from 'jquery'
-import React, { Component } from 'react';
+import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
 
-const { SubMenu } = Menu;
-import SeniorModal from '../../static/react/SeniorModal.jsx';
-import 'antd/dist/antd.css';
-
-const dialogIframe = {
-    top :20,
-    width: 780,
-    padding:0,
-    frameborder:"no"  ,border:"0", marginwidth:"0" ,marginheight:"0" , allowtransparency:"yes"
-};
-const dialogDiv={
-    top :20,
-    width: "780",
-    height: "780",
-    padding:0
+const data = [];
+for (let i = 0; i < 100; i++) {
+    data.push({
+        key: i.toString(),
+        name: `Edrward ${i}`,
+        age: 32,
+        address: `London Park no. ${i}`,
+    });
 }
-class Dialog extends React.Component {
-    state = { visible: false,  padding:0 };
-
-    showModal = () => {
-        this.setState({
-            visible: true,
-        });
-    };
-
-    handleOk = e => {
-        console.log(e);
-        this.setState({
-            visible: false,
-        });
-    };
-
-    handleCancel = e => {
-        console.log(e);
-        this.setState({
-            visible: false,
-        });
-    };
-
-    render() {
-        return (
-            <div>
-                <Button type="primary" onClick={this.showModal} style={{ textAlign: 'right' }}>
-                    新增
-                </Button>
-                <SeniorModal style={dialogDiv}  popup="true"
-                    title="生成代码"
-                             width='800'
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                             src="/createCode/ceateEdit.html"
-                >
-
-                </SeniorModal>
-            </div>
-        );
-    }
-}
-
 const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
@@ -114,15 +59,26 @@ class EditableCell extends React.Component {
 class EditableTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data:[], editingKey: '' };
+        this.state = { data, editingKey: '' };
         this.columns = [
-            {dataIndex:'index',title:'序号',width:120,                    editable: true},
-                {dataIndex:'ftlName',title:'模板名称',width:120,                    editable: true},
-                {dataIndex:'fieldType',title:'字段默认类型',width:80,align:'right',    editable: true},
-                {dataIndex:'title',title:'标题',width:250,                    editable: true},
-                {dataIndex:'userId',title:'用户',width:250,                    editable: true,},
-                {dataIndex:'ceatelDate',title:'创建日期',width:250,                    editable: true,},
-
+            {
+                title: 'name',
+                dataIndex: 'name',
+                width: '25%',
+                editable: true,
+            },
+            {
+                title: 'age',
+                dataIndex: 'age',
+                width: '15%',
+                editable: true,
+            },
+            {
+                title: 'address',
+                dataIndex: 'address',
+                width: '40%',
+                editable: true,
+            },
             {
                 title: 'operation',
                 dataIndex: 'operation',
@@ -212,7 +168,6 @@ class EditableTable extends React.Component {
 
         return (
             <EditableContext.Provider value={this.props.form}>
-
                 <Table
                     components={components}
                     bordered
@@ -228,8 +183,11 @@ class EditableTable extends React.Component {
     }
 }
 
-
 const EditableFormTable = Form.create()(EditableTable);
 
-render(<EditableFormTable />, root);
-render(<Dialog />, search);
+ReactDOM.render(<EditableFormTable />, mountNode);
+.editable-row .ant-form-explain {
+    position: absolute;
+    font-size: 12px;
+    margin-top: -4px;
+}

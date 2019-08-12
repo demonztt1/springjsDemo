@@ -66,20 +66,7 @@ export  default class ContextMenu extends React.Component {
         Object.assign(menuStyles, menusys);
         return (
             <Menu  style={menuStyles} visible={visible}>
-                <Menu.Item key="0">
-                    <a target="_blank" rel="noopener noreferrer" >
-                        1st menu item
-                    </a>
-                </Menu.Item>
-                <Menu.Item key="1">
-                    <a target="_blank" rel="noopener noreferrer">
-                        2nd menu item
-                    </a>
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Item key="3" disabled>
-                    3rd menu item（disabled）
-                </Menu.Item>
+                {this.props.vuale}
             </Menu>
        ) ;
     }

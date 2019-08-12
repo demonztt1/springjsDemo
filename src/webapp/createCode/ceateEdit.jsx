@@ -5,8 +5,84 @@ import React, { Component } from 'react';
 import ContextMenu from '../../static/react/ContextMenu.jsx';
 
 import 'antd/dist/antd.css';
+//import toCamelCaseVer from "../../static/js/create/toCamelCaseVer";
+
+import JSZip from 'jszip';
+import saveAs from 'jszip/vendor/FileSaver';
+
+import jquery from 'jquery'
+window.$=jquery;
 
 const EditableContext = React.createContext();
+
+
+  function  toCamelCaseVer(variable, bigMark) {
+    {
+        let reg = /_+(\w)/g;
+        variable = variable.toLowerCase();
+        if (bigMark) {
+            variable = variable.replace(/^./g, function () {
+                if (arguments[2]) {
+                    return (arguments[0]).toUpperCase();
+                }
+                return arguments[0];
+            })
+        }
+        return variable.replace(reg, function () {
+            if (arguments[2]) {
+                return (arguments[1]).toUpperCase();
+            }
+            else {
+                return arguments[0];
+            }
+        })
+    }
+}
+
+const ftlData = [
+    {
+        "ftlPath": "/ftl/armo/entiyTemplate.ftl",
+        "content": "IF_HIS_DATA",
+        "loadType": "NVARCHAR2",
+        "title": "实体类",
+        "packagePath":"entiy",
+        "suffix":".java"
+    }, {
+        "ftlPath": "/ftl/armo/mapperInterfaceTemplate.ftl",
+        "content": "IF_HIS_DATA",
+        "loadType": "NVARCHAR2",
+        "title": "接口",
+        "packagePath":"interface",
+        "suffix":"Mapper.java"
+    }, {
+        "ftlPath": "/ftl/armo/mapperOracleTemplate.ftl",
+        "content": "IF_HIS_DATA",
+        "loadType": "NVARCHAR2",
+        "title": "mapperXml",
+        "packagePath":"mapper",
+        "suffix":"Mapper.xml"
+    }, {
+        "ftlPath": "/ftl/armo/serviceTemplate.ftl",
+        "content": "IF_HIS_DATA",
+        "loadType": "NVARCHAR2",
+        "title": "服务类",
+        "packagePath":"service",
+        "suffix":"Service.java"
+    }, {
+        "ftlPath": "/ftl/armo/shtmlEditTemplate.ftl",
+        "content": "IF_HIS_DATA",
+        "loadType": "NVARCHAR2",
+        "title": "添加编辑页面",
+        "packagePath":"shtml",
+        "suffix":"Edit.shtml"
+    }, {
+        "ftlPath": "/ftl/armo/shtmlListTemplate.ftl",
+        "content": "IF_HIS_DATA",
+        "loadType": "NVARCHAR2",
+        "title": "列表页",
+        "packagePath":"shtml",
+        "suffix":"List.shtml"
+    }]
 
 const umenu = (
     <Menu>
@@ -85,11 +161,39 @@ class AdvancedSearchForm extends React.Component {
         const { expand } = this.state;
         this.setState({ expand: !expand });
     };
+    //添加字段
     addField = () => {
-        let data=[...this.props.data,{}]
+        let index=this.props.data.length;
+        let data=[...this.props.data,{"key":index+10}]
         this.props.pfn(data)//这个地方把值传递给了props的事件当中
     };
 
+    //生成代码
+    createCode =()=>{
+        let fields=[...this.props.data]
+
+        var title = "eo"
+        var tableName = 'tableName';
+        var packageName ="emeo"
+        var zip = new JSZip();
+
+        ftlData.forEach((e,i)=>{
+                        let url='/static/'+e.ftlPath
+            console.log(url)
+                    let htmlobj=$.ajax({url:url,async:false});
+                    let htmlpath=`${e.packagePath}/${packageName==""?tableName:packageName}/${tableName}${e.suffix}`;
+                    // let obj1=`${htmlobj.responseText}`
+                    let obj1= eval(htmlobj.responseText)
+                    zip.file(htmlpath,obj1);
+                }
+            )
+            zip.generateAsync({type:"blob"})
+                .then(function(content) {
+                    // see FileSaver.js
+                    saveAs(content, "example.zip");
+                });
+
+    }
     render() {
         return (
             <Form className="ant-advanced-search-form" onSubmit={this.handleSearch}>
@@ -107,7 +211,7 @@ class AdvancedSearchForm extends React.Component {
                         <Button  style={{ marginLeft: 8 }}  type="primary"  onClick={this.addField}>
                             添加字段
                         </Button>
-                        <Button  style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
+                        <Button  style={{ marginLeft: 8 }}  type="primary"  onClick={this.createCode}>
                             生成代码
                         </Button>
                         <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
@@ -141,10 +245,23 @@ class AdvancedSearchForm extends React.Component {
 class EditableTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data:[], editingKey: '',
+        this.state = { data:[{COLUMN_ID: "1",
+                COLUMN_NAME: "1",
+                COMMENTS: "1",
+                DATA_DEFAULT: "1",
+                DATA_LENGTH: "1",
+                DATA_TYPE: "1",
+                NULLABLE: "1",
+                ShowType: "1",
+                dataDomain: "1",
+                isGroup: "1",
+                isSelect: "1",
+                key: 10}], editingKey: '',
             event:{}
-            ,visible:false};
+            ,visible:false
+            ,index:-1};
         this.columns = [
+            {dataIndex:'key',title:'序号',width:80 ,editable: true},
             {dataIndex:'COLUMN_ID',title:'序号',width:80 ,editable: true},
             {dataIndex:'COMMENTS',title:'标题',width:250,editable: true},
             {dataIndex:'COLUMN_NAME',title:'变量名',width:250,align:'right',editable: true},
@@ -220,6 +337,7 @@ class EditableTable extends React.Component {
                 },
             },
         ];
+       this.del=this.del.bind(this)
     }
 
     isEditing = record => record.key === this.state.editingKey;
@@ -227,9 +345,10 @@ class EditableTable extends React.Component {
     cancel = () => {
         this.setState({ editingKey: '' });
     };
-    menu= (event) =>{
+    menu= (event,index) =>{
+        console.log(index)
         this.setState({event:event,
-            visible: true})
+            visible: true,index:index})
     }
 
     /*获取子组件传递过来的值*/
@@ -271,6 +390,35 @@ class EditableTable extends React.Component {
         });
 
     }
+
+    del(){
+        const selectedRowKeys = this.state.index;
+        let dataSource = this.state.data;
+            dataSource.splice(Number.parseInt(selectedRowKeys), 1);
+        this.setState({
+            data: dataSource,
+            index: []
+        })
+    }
+
+    findMenu(){
+        return (<Menu>
+            <Menu.Item key="0" onClick={this.del.bind(this)}>
+                <a target="_blank" rel="noopener noreferrer" >
+                    1st menu item
+                </a>
+            </Menu.Item>
+            <Menu.Item key="1">
+                <a target="_blank" rel="noopener noreferrer">
+                    2nd menu item
+                </a>
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="3" disabled>
+                3rd menu item（disabled）
+            </Menu.Item>
+        </Menu>)
+    }
     render() {
         const components = {
             body: {
@@ -297,7 +445,14 @@ class EditableTable extends React.Component {
         return (
             <EditableContext.Provider value={this.props.form}>
                 <ContextMenu uevent={this.state.event}
-                             status={this.changeStatus} visible={this.state.visible}></ContextMenu>
+                             status={this.changeStatus}
+                             vuale={this.findMenu()}
+                             del={this.del}
+                             index={this.index}
+                             visible={this.state.visible}>
+
+
+                </ContextMenu>
                <AdvancedSearchForm pfn={this.fn.bind(this)} data={this.state.data}></AdvancedSearchForm>
                 <Table
                     components={components}
@@ -309,10 +464,11 @@ class EditableTable extends React.Component {
                         onChange: this.cancel,
 
                     }}
-                    onRow={record => {
+                    key="COLUMN_ID"
+                    onRow={(record, index) => {
                         return {
                             onContextMenu: event => {
-                              this.menu(event)
+                              this.menu(event ,index)
                             },
                         };
                     }}

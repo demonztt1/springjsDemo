@@ -14,24 +14,33 @@ import { render } from 'react-dom';
 
 import 'antd/dist/antd.css';
 //import './index.css';
-import { Menu, Icon, Switch } from 'antd';
+import {   Icon, Switch } from 'antd';
+import Menu from './common/menu/menu.jsx';
 
-const { SubMenu } = Menu;
+/*class Sider extends React.Component {
+    constructor(props) {
+        super(props);
+        state = {
+            mode: 'inline',
+            theme: 'light',
+            nodes:[ {key:11,pid:0,name:'生产代码',url:'/createCode/ceate.html'},
+                {key:12,pid:0,name:'模板列表',url:'/createCode/ceateFtlList.html'},
+                {key:13,pid:0,name:'字段列表',url:'/createCode/ceateFieldList.html'},
+                {key:14,pid:0,name:'生成代码',url:'/createCode/ceateList.html'},
+                {key:15,pid:0,name:'qguan',url:'/react/qguan/reactEasyuiTest.html'},
+                {key:16,pid:0,name:'张三1',url:''},
+                {key:17,pid:16,name:'张三11'},
+                {key:18,pid:0,name:'张三1',url:''},
+                {key:19,pid:18,name:'张三11'}
 
-class Sider extends React.Component {
-    state = {
-        mode: 'inline',
-        theme: 'light',
-        nodes:[ {key:1,pid:0,name:'生产代码',url:'/createCode/ceate.html'},
-                    {key:2,pid:0,name:'模板列表',url:'/createCode/ceateFtlList.html'},
-                    {key:3,pid:0,name:'字段列表',url:'/createCode/ceateFieldList.html'},
-                    {key:4,pid:0,name:'生成代码',url:'/createCode/ceateList.html'},
-                    {key:5,pid:0,name:'qguan',url:'/react/qguan/reactEasyuiTest.html'},
-                    {key:6,pid:0,name:'张三1',url:''},
-                    {key:7,pid:6,name:'张三11'}
+            ]
+        };
 
-]
-    };
+
+        this.handleClick=this.handleClick.bind(this)
+    }
+
+
 
     changeMode = value => {
         this.setState({
@@ -47,34 +56,23 @@ class Sider extends React.Component {
 
     render() {
     this.toTow();
-    console.log(this.state.nodes)
         return (
-            <div>
-                <Menu
-                    style={{ width: 200 },{border:'1px solid #D2D8DE'}}
-                    defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['sub1']}
-                    mode={this.state.mode}
-                    theme={this.state.theme}
-                >
-                    <Menu.Item key="2">
-                        <Icon type="calendar" />
-                        <span>
-                        <a href="javascript:window.addr('2121','testReact','react/reactEasyuiTest.html')" >testReact</a>
-                            </span>
+            <ul>
+                { this.ftTree (0)}
 
-                    </Menu.Item>
-                    <Menu.Item key="4">Option 4</Menu.Item>
-                    <SubMenu key="sub1-2" title="Submenu">
-                        <Menu.Item key="5">Option 5</Menu.Item>
-                        <Menu.Item key="6">Option 6</Menu.Item>
-                    </SubMenu>
-                    { this.ftTree (0)}
-                </Menu>
-            </div>
+            </ul>
         );
     }
+
+    handleClick = e => {
+        console.log('click ', e);
+        this.setState({
+            current: e.key,
+        });
+    };
+
     onOpenChange = openKeys => {
+        debugger;
         const latestOpenKey = openKeys.find(key => this.state.openKeys.indexOf(key) === -1);
         if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
             this.setState({ openKeys });
@@ -90,65 +88,72 @@ class Sider extends React.Component {
         }
     }
 
-ftTree (w) {
-    if (this.state.nodes[w].l == null) {
-        return(
-            <Menu>
-        <Menu.Item key={this.state.nodes[w].key}>
-            <a href={`javascript:window.addr("${this.state.nodes[w].key}","${this.state.nodes[w].name}",
-            "${this.state.nodes[w].url}")`} >{this.state.nodes[w].name}</a>
-        </Menu.Item>
-        { this.ifr(w) }
-            </Menu>
+    resr(w){
 
-    )
-    } else {
-        return(
-            <Menu>
-        <SubMenu
-            key={this.state.nodes[w].key}
-            title={
-                <span>
-                <Icon type="setting" />
-                <span>{this.state.nodes[w].name}</span>
-              </span>
+    }
+
+
+    ftTree (w) {
+        if (this.state.nodes[w].l == null) {
+                return(
+                    <div>
+                        <div key={this.state.nodes[w].key}>
+                            <span
+                                href={`javascript:window.addr("${this.state.nodes[w].key}","${this.state.nodes[w].name}",
+                        "${this.state.nodes[w].url}")`}
+                            ><i class="fa fa-plus-circle"></i>{this.state.nodes[w].name}</span>
+                        </div>
+
+                        {   this.ifr(w)}
+                    </div>
+            )
+        } else {
+            return(
+                <div
+                    onClick={this.handleClick}>
+
+                    <div  key={this.state.nodes[w].key}>
+                         <span>
+                            <Icon type="setting" />
+                            <span>{this.state.nodes[w].name}</span>
+                          </span>
+
+                        { this.ftTree(this.state.nodes[w].l) }
+
+                    </div  >
+                      {this.ifr(w)}
+                </div>
+            )
+        }
+        return;
+    }
+
+    toTow(){
+        for (var i in this.state.nodes) {
+            this.state.nodes[i].l = this.toL(this.state.nodes[i].key);  //就是获取每个对象的menu_id
+            this.state.nodes[i].r = this.toR(this.state.nodes[i].pid,i);//就是获取每个对象的pid
+        }
+    }
+    toL (key) {
+        for (var i in this.state.nodes) {
+            if (this.state.nodes[i].pid == key) {
+                return i;
             }
-        >
-
-            { this.ftTree(this.state.nodes[w].l) };
-        </SubMenu>   {this.ifr(w)}
-
-            </Menu>
-        )
-    }
-    return;
-}
-
-toTow(){
-    for (var i in this.state.nodes) {
-        this.state.nodes[i].l = this.toL(this.state.nodes[i].key);  //就是获取每个对象的menu_id
-        this.state.nodes[i].r = this.toR(this.state.nodes[i].pid,i);//就是获取每个对象的pid
-    }
-}
-toL (key) {
-    for (var i in this.state.nodes) {
-        if (this.state.nodes[i].pid == key) {
-            return i;
         }
+        return null;
     }
-    return null;
-}
-toR (pId,l) {
-    for (var i = l; i < this.state.nodes.length; i++) {
-        if (this.state.nodes[i].pid== pId && i != l) {
-            return i;
+    toR (pId,l) {
+        for (var i = l; i < this.state.nodes.length; i++) {
+            if (this.state.nodes[i].pid== pId && i != l) {
+                return i;
+            }
         }
+        return null;
     }
-    return null;
-}
-}
+}*/
 
- render(<Sider />, left);
+
+ render(<Menu />, left);
 
 // 加载组件到 DOM 元素 mountNode
 //render(<App name="root" />, menu);

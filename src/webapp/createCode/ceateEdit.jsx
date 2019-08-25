@@ -12,7 +12,7 @@ import saveAs from 'jszip/vendor/FileSaver';
 
 import jquery from 'jquery'
 window.$=jquery;
-
+import SeniorModal from '../../static/react/SeniorModal.jsx';
 const EditableContext = React.createContext();
 
 
@@ -83,19 +83,13 @@ const ftlData = [
         "packagePath":"shtml",
         "suffix":"List.shtml"
     }]
+const dialogDiv={
+    top :20,
+    width: "780",
+    height: "780",
+    padding:0
+}
 
-const umenu = (
-    <Menu>
-        <Menu.Item key="0">
-            <a href="http://www.alipay.com/">1st menu item</a>
-        </Menu.Item>
-        <Menu.Item key="1">
-            <a href="http://www.taobao.com/">2nd menu item</a>
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="3">3rd menu item</Menu.Item>
-    </Menu>
-);
 
 class EditableCell extends React.Component {
     getInput = () => {
@@ -168,6 +162,23 @@ class AdvancedSearchForm extends React.Component {
         this.props.pfn(data)//这个地方把值传递给了props的事件当中
     };
 
+        ajax =(url)=>{
+            let res = new Promise(function(resolve, reject) {
+
+                var xhr = new XMLHttpRequest();//创建新的XHR对象
+                xhr.open('GET', url);//指定获取数据的方式和url地址
+                let blob;
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
+                xhr.responseType = 'blob';//以blob的形式接收数据，一般文件内容比较大
+                xhr.onload = function (e) {
+                    resolve(this.response)      ;//Blob数据
+
+                };
+                xhr.send(); //post请求传的参数
+            })
+            return res
+        }
+
     //生成代码
     createCode =()=>{
         let fields=[...this.props.data]
@@ -176,22 +187,42 @@ class AdvancedSearchForm extends React.Component {
         var tableName = 'tableName';
         var packageName ="emeo"
         var zip = new JSZip();
+        let url='/static/ftl/armo.zip'
 
-        ftlData.forEach((e,i)=>{
-                        let url='/static/'+e.ftlPath
-            console.log(url)
-                    let htmlobj=$.ajax({url:url,async:false});
-                    let htmlpath=`${e.packagePath}/${packageName==""?tableName:packageName}/${tableName}${e.suffix}`;
-                    // let obj1=`${htmlobj.responseText}`
-                    let obj1= eval(htmlobj.responseText)
-                    zip.file(htmlpath,obj1);
+        this.ajax(url).then( function (blob) {
+            return JSZip.loadAsync(blob)
+        }) .then(function (zipu) {
+            //多个异步返回操作 和  Promise.all 配合使用
+            let ress=new Array()
+            zipu.folder().forEach((e,i)=>{
+                    if(!i.dir){
+                     let res=new Promise(resolve => {
+                         zipu.file(e).async("string")
+                             .then(function (w, i) {
+                                 let obj1= eval(w) ;
+                                 zip.file(e,obj1);
+                                 resolve("")
+                             });
+                     })
+                        ress.push(res);
+                    }
                 }
             )
-            zip.generateAsync({type:"blob"})
-                .then(function(content) {
-                    // see FileSaver.js
-                    saveAs(content, "example.zip");
-                });
+            Promise.all(ress).then(()=>
+            {
+                //多个异步返回操作 和  Promise.all 配合使用
+                //添加下载
+                zip.generateAsync({type:"blob"})
+                    .then(function(content) {
+                        // see FileSaver.js
+                        saveAs(content, "example.zip");
+                    });
+            })
+
+            return zipu.folder();
+        }).then(function (dirs) {
+            console.table(dirs.files);
+        });
 
     }
     render() {
@@ -245,30 +276,30 @@ class AdvancedSearchForm extends React.Component {
 class EditableTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data:[{COLUMN_ID: "1",
-                COLUMN_NAME: "1",
-                COMMENTS: "1",
-                DATA_DEFAULT: "1",
-                DATA_LENGTH: "1",
-                DATA_TYPE: "1",
-                NULLABLE: "1",
-                ShowType: "1",
-                dataDomain: "1",
-                isGroup: "1",
-                isSelect: "1",
+        this.state = { data:[{columnId: "1",
+                name: "1",
+                title: "1",
+                default: "1",
+                length: "1",
+                type: "1",
+                isNull: "1",
+                showType: "1",
+                group: "1",
+                select: "1",
                 key: 10}], editingKey: '',
             event:{}
             ,visible:false
-            ,index:-1};
+            ,index:-1
+            ,winVisible:false};
         this.columns = [
             {dataIndex:'key',title:'序号',width:80 ,editable: true},
-            {dataIndex:'COLUMN_ID',title:'序号',width:80 ,editable: true},
-            {dataIndex:'COMMENTS',title:'标题',width:250,editable: true},
-            {dataIndex:'COLUMN_NAME',title:'变量名',width:250,align:'right',editable: true},
-            {dataIndex:'DATA_TYPE',title:'数据库类型',width:150,align:'right',editable: true},
-            {dataIndex:'DATA_LENGTH',title:'长度',width:60,editable: true},
-            {dataIndex:'NULLABLE',title:'是否可空',width:80,align:'center',editable: true},
-            {dataIndex:'DATA_DEFAULT',title:'默认值',width:200,align:'center',editable: true},
+            {dataIndex:'column_id',title:'序号',width:80 ,editable: true},
+            {dataIndex:'title',title:'标题',width:250,editable: true},
+            {dataIndex:'columnName',title:'变量名',width:250,align:'right',editable: true},
+            {dataIndex:'dataType',title:'数据库类型',width:150,align:'right',editable: true},
+            {dataIndex:'dataLength',title:'长度',width:60,editable: true},
+            {dataIndex:'isNull',title:'是否可空',width:80,align:'center',editable: true},
+            {dataIndex:'data_default',title:'默认值',width:200,align:'center',editable: true},
             {dataIndex:'isGroup',title:'小组',width:120
                 ,editor: {
                     type: 'textbox'}
@@ -338,6 +369,7 @@ class EditableTable extends React.Component {
             },
         ];
        this.del=this.del.bind(this)
+        this.winEdit=this.winEdit.bind(this)
     }
 
     isEditing = record => record.key === this.state.editingKey;
@@ -401,24 +433,49 @@ class EditableTable extends React.Component {
         })
     }
 
+    winEdit(){
+        this.setState({
+            winVisible:true
+        })
+    }
+
+
     findMenu(){
         return (<Menu>
             <Menu.Item key="0" onClick={this.del.bind(this)}>
                 <a target="_blank" rel="noopener noreferrer" >
-                    1st menu item
+                   删除
                 </a>
             </Menu.Item>
-            <Menu.Item key="1">
+            <Menu.Item key="1" onClick={this.winEdit.bind(this)}>
                 <a target="_blank" rel="noopener noreferrer">
-                    2nd menu item
+                    编辑
                 </a>
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="3" disabled>
-                3rd menu item（disabled）
+               查看信息
             </Menu.Item>
         </Menu>)
     }
+
+
+    handleOk = e => {
+        const selectedRowKeys = this.state.index;
+        console.log(selectedRowKeys);
+        this.setState({
+            winVisible: false,
+        });
+        debugger;
+        console.table("窗口关闭" +e)
+    };
+
+    handleCancel = e => {
+        console.log(e);
+        this.setState({
+            winVisible: false,
+        });
+    };
     render() {
         const components = {
             body: {
@@ -453,6 +510,16 @@ class EditableTable extends React.Component {
 
 
                 </ContextMenu>
+                <SeniorModal style={dialogDiv}  popup="true"
+                             title="编辑字段"
+                             width='800'
+                             visible={this.state.winVisible}
+                             onOk={this.handleOk}
+                             onCancel={this.handleCancel}
+                             src="/createCode/fieldEdit.html"
+                >
+
+                </SeniorModal>
                <AdvancedSearchForm pfn={this.fn.bind(this)} data={this.state.data}></AdvancedSearchForm>
                 <Table
                     components={components}
@@ -477,6 +544,9 @@ class EditableTable extends React.Component {
         );
     }
 }
+
+
+
 
 
 const EditableFormTable = Form.create()(EditableTable);

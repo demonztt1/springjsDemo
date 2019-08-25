@@ -1,4 +1,4 @@
-import ceateFtlList  from './ceateFtlList.html'
+import ceateFtlList  from './field/ceateFtlList.html'
 import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu} from 'antd';
 import { render } from 'react-dom';
 import jquery from 'jquery'

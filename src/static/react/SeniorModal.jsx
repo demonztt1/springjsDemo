@@ -37,20 +37,26 @@ class Index extends React.Component {
         }
     }
 
-
+    close =(val)=>{
+        debugger;
+        this.props.onOk(val);
+    }
 
     render() {
         const {src} = this.props;
         return (
             <iframe
                 style={{width:'100%', height:this.state.iFrameHeight, overflow:'visible'}}
+                onClose={this.close}
                 onLoad={() => {
                     const obj = ReactDOM.findDOMNode(this);
                     this.setState({
                         "iFrameHeight":  obj.contentWindow.document.body.scrollHeight + 'px',
                         "iFrameWidth":  obj.contentWindow.document.body.scrollWidth + 'px'
                     });
+                    obj.contentWindow.top.close=this.close.bind(this)
                 }}
+
                 ref="iframe"
 
 
@@ -72,9 +78,10 @@ export  default  class SeniorModal extends  React.Component{
                 width={width}
                 {...this.props}
                 title={title}
+                footer={null}
             >
                 {this.props.children}
-                <Index  src={src}></Index>
+                <Index  src={src} onOk={this.props.onOk}></Index>
             </Modal>
         );
     }

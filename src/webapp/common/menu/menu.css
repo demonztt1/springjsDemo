@@ -1,0 +1,119 @@
+.menu,
+.menuSub
+{
+    margin: 0;
+    padding: 0 0 0 2em;
+}
+.menuSub> div,
+.menu> div  {
+    list-style: none;
+    position: relative;
+}
+.menu> div:first-child:before  div {
+    border-style: none none solid none;
+    position: relative;
+    z-index: 3;
+}
+
+div.menu:first-child:after     {
+    position: absolute;
+    content: '';
+    top: 1em;
+    left: -1em;
+    width: 3.5em;
+    height: 100%;
+    border-style: solid none none none;
+    border-width: 0.05em;
+    border-color: #aaa;
+}
+
+
+div.menu  :not(:last-child)    :after     {
+    position: absolute;
+    content: '';
+    top: 0.5em;
+    left: -1em;
+    width: 0.8em;
+    height: 100%;
+    border-style: none none solid solid;
+    border-width: 0.05em;
+    border-color: #aaa;
+}
+
+div.menu:first-child:after     {
+    position: absolute;
+    content: '';
+    top: 1em;
+    left: -1em;
+    width: 3.5em;
+    height: 100%;
+    border-style: solid none none none;
+    border-width: 0.05em;
+    border-color: #aaa;
+}
+
+div.menuSub:not(:last-child):after  {
+    position: absolute;
+    content: '';
+    top: 0.5em;
+    left: -1em;
+    width: 0.8em;
+    height: 100%;
+    border-style: none none solid solid;
+    border-width: 0.05em;
+    border-color: #aaa;
+}
+
+div.menuSub :last-child:after     {
+    position: absolute;
+    content: '';
+    top: 0.5em;
+    left: -1em;
+    width: 1em;
+    height: 100%;
+    border-style: none none none none;
+    border-width: 0.05em;
+    border-color: #aaa;
+}
+
+
+.menu-plus {
+    position: relative;
+}
+
+.menu-plus:before     {
+    cursor:pointer;
+    content: "+";
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    /*--adjust as necessary--*/
+    color: #000;
+    font-size: 24px;
+    padding-right: 0.5em;
+    position: absolute;
+    top: -0.5em;
+    left: -0em;
+}
+.menu-minus:before     {
+    cursor:pointer;
+    content: "-";
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    /*--adjust as necessary--*/
+    color: #000;
+    font-size: 36px;
+    padding-right: 0.5em;
+    position: absolute;
+    top: -0.5em;
+    left: -0em;
+}
+
+.liMenu > span{
+    margin-left: 20px;
+}
+
+.menu-plus>.menuSub{
+    display: none;
+}

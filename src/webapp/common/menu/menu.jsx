@@ -68,14 +68,18 @@ export  default class Menu extends React.Component {
         console.log("span")
     }
 
-
+    clickA=(e,key,name,url,)=>{
+        e.stopPropagation();
+        window.addr(key,name,url)
+    }
 
     ftTree (w) {
         if (this.state.nodes[w].l == null) {
             let s=  <div  key={this.state.nodes[w].key} class="liMenu">
                         <span
-                        ><a  href={`javascript:window.addr("${this.state.nodes[w].key}","${this.state.nodes[w].name}",
-                            "${this.state.nodes[w].url}")`} >{this.state.nodes[w].name}</a></span>
+                            onClick={(e)=>{this.clickA(e,this.state.nodes[w].key,
+                                this.state.nodes[w].name,this.state.nodes[w].url)}}
+                        ><a >{this.state.nodes[w].name}</a></span>
 
             </div>
             let list = [];

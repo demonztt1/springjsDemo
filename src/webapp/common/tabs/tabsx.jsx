@@ -11,9 +11,7 @@ class Demo extends React.Component {
         super(props);
         this.newTabIndex = 0;
         const panes = [
-            { title: '首页', content: 'Content of Tab 1',closable: false, key: '首页',url:'elements.html' },
-            { title: 'Tab 2', content: 'Content of Tab 2', key: 'Tab 2',url:'/react/reactEasyuiTest.html'  },
-
+            { title: '首页', content: '首页',closable: false, key: '首页',url:'elements.html' }
         ];
         this.state = {
             activeKey: panes[0].key,
@@ -32,9 +30,16 @@ class Demo extends React.Component {
     };
 
     add = (activeKey,name,url) => {
+        activeKey=activeKey.toString()
         const { panes } = this.state;
+        for(let i=0;i<panes.length;i++) {
+            if (panes[i].key == activeKey) {
+                this.setState({activeKey});
+                return;
+            }
+        }
         panes.push({ title:name, content: 'Content of new Tab', key: activeKey ,url:url});
-        this.setState({ panes, activeKey });
+        this.setState({ panes, activeKey })
     };
     remove = targetKey => {
         let { activeKey } = this.state;
@@ -63,13 +68,11 @@ class Demo extends React.Component {
                 activeKey={this.state.activeKey}
                 type="editable-card"
                 onEdit={this.onEdit}
-            >
-                {this.state.panes.map(pane => (
-                    <TabPane tab={pane.title} key={pane.key} closable={pane.closable}>
-
+                hideAdd={true}
+            >{this.state.panes.map(pane => (
+                    <TabPane tab={pane.title} key={pane.key} closable={pane.closable}  >
                             <iframe src= {pane.url}
                                     width="100%" height="595" frameborder="no" border="0" marginwidth="0" marginheight="0"  allowtransparency="yes"></iframe>
-
                     </TabPane>
                 ))}
             </Tabs>

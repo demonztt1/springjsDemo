@@ -13,7 +13,3 @@ import { render } from 'react-dom';
 
 import 'antd/dist/antd.css';
 import {   Icon, Switch } from 'antd';
-import Menu from './common/menu/menu.jsx';
-
-
- render(<Menu />, left);

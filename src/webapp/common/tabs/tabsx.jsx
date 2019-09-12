@@ -1,17 +1,19 @@
-import { Tabs } from 'antd';
+import { Tabs,ButtonGroup,Button ,Dropdown,Menu} from 'antd';
 import React, { Component } from 'react';
-//import { Button ,Menu , SubMenu }from 'antd';
+import TotalMenu from '../../../static/react/TotalMenu.jsx';
 import { render } from 'react-dom';
 import 'antd/dist/antd.css';
 const { TabPane } = Tabs;
 var addr;
 window.addr=addr;
+
+
 class Demo extends React.Component {
     constructor(props) {
         super(props);
         this.newTabIndex = 0;
         const panes = [
-            { title: '首页', content: '首页',closable: false, key: '首页',url:'elements.html' }
+            { title: '首页', content: '首页',closable: false, key: '首页',url:'eindex.html' }
         ];
         this.state = {
             activeKey: panes[0].key,
@@ -60,24 +62,44 @@ class Demo extends React.Component {
         this.setState({ panes, activeKey });
     };
 
+
+    buttonMenu(){
+        let res =new Array();
+        res.push(
+            <Dropdown overlay={ <TotalMenu/> }  >
+                <Button>菜单</Button>
+            </Dropdown>
+        )
+        res.push(    <Dropdown overlay={<TotalMenu/> } >
+                <Button>角色</Button>
+            </Dropdown>
+        )
+
+        return res;
+    }
+
     render() {
+        let  button=this.buttonMenu();
         return (
-            <Tabs
+            <Tabs tabBarExtraContent={button}
                 style={  {border:'1px solid #D2D8DE'}}
                 onChange={this.onChange}
                 activeKey={this.state.activeKey}
                 type="editable-card"
                 onEdit={this.onEdit}
-                hideAdd={true}
-            >{this.state.panes.map(pane => (
-                    <TabPane tab={pane.title} key={pane.key} closable={pane.closable}  >
-                            <iframe src= {pane.url}
-                                    width="100%" height="595" frameborder="no" border="0" marginwidth="0" marginheight="0"  allowtransparency="yes"></iframe>
-                    </TabPane>
-                ))}
+                hideAdd={true}>
+                {this.state.panes.map(pane => (
+                                    <TabPane tab={pane.title} key={pane.key} closable={pane.closable}  >
+                                            <iframe src= {pane.url}
+                                                    width="100%" height="700" frameborder="no" border="0" marginwidth="0"
+                                                    marginheight="0" allowtransparency="yes"></iframe>
+                                    </TabPane>
+                                )
+                        )
+                }
             </Tabs>
         );
     }
 }
 
- render(<Demo />, page);
+ render(<Demo />,  document.getElementById("page") );

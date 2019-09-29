@@ -30,13 +30,13 @@ class UserCtrl{
                 token: "xxxxxx"
             }))
 
-        /*    this.userService.findById(user,function (resUser) {
-                res.write({
-                    message: '请求成功',
-                    token: resUser
-                })
+            /*    this.userService.findById(user,function (resUser) {
+                    res.write({
+                        message: '请求成功',
+                        token: resUser
+                    })
 
-            }) */
+                }) */
 
             // let token = jwt.sign({name:user.name},secretkey,{expiresIn: 60*8});
 
@@ -58,12 +58,12 @@ class UserCtrl{
             token: "getList"
         }))
 
-     /*   var listStr = this.userService.findAll()
-        res.json({
-            message: '请求成功',
-            resultCode: 1,
-            info: listStr
-        })*/
+        /*   var listStr = this.userService.findAll()
+           res.json({
+               message: '请求成功',
+               resultCode: 1,
+               info: listStr
+           })*/
         return;
     }
 

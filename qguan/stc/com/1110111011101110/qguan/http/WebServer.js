@@ -34,8 +34,7 @@ class WebServer{
                     req.body= JSON.parse( chunkss.toString() );  // 关键代码
                     this.context= ApplicationContext.getInstance()
                     this.context.findBend(req,res,null,"http")
-                    res.end();
-                    res.end();
+
                 })
 
         }).listen(port);

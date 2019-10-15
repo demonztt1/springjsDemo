@@ -16,10 +16,12 @@ export  default class TotalMenu extends React.Component {
                 {key:16,pid:0,name:'商城',url:'',isOpen:true},
                 {key:17,pid:16,name:'商品',url:'/shop/goods.html'},
                 {key:18,pid:0,name:'张三1',url:'',isOpen:true},
-                {key:19,pid:18,name:'张三11'},
+                {key:19,pid:18,name:'文件夹',url:"/common/sys/dir.html"},
                 {key:20,pid:18,name:'张三11'},
                 {key:21,pid:18,name:'张三11',isOpen:true},
                 {key:22,pid:21,name:'张三11'},
+
+                {key:40,pid:0,name:'张三1',url:'/common/sys/dir.html'},
                 {key:15,pid:0,name:'qguan',url:'/react/qguan/reactEasyuiTest.html'},
                 {key:36,pid:0,name:'张三3',url:''},
                 {key:37,pid:36,name:'张三33'},

@@ -1,6 +1,7 @@
 
 import childProcess from 'child_process'
 import fs from 'fs'
+import path from 'path'
 let  Service =qGuan.find("service")
 let  Resource =qGuan.find("resource")
 
@@ -67,18 +68,43 @@ class ShowLetter{
 
     //获取目录下的文件
     findDir(pid,dirPath){
-        let result = fs.readdirSync(dirPath+"//");
-        let resObj=new Array();
-        debugger
-        for (let i=0;i<result.length;i++){
-            let res={};
-            res.pid=pid;
-            res.name=result[i];
-          //  res.isDir=fs.lstatSync(dirPath+"//"+result[i]).isDirectory();
-            resObj.push(res)
-        }
 
-        return resObj;
+        let rename=new Promise(function (resolve1) {
+            let result = fs.readdirSync(dirPath);
+            let resObj=new Array();
+            let resPromise=new Array();
+            for (let i=0;i<result.length;i++){
+               let pro= new Promise(function(resolve, reject) {
+                    let res={};
+                    res.pid=pid;
+                    res.name=result[i];
+                   fs.stat(dirPath+result[i], function (err, stats) {
+                       if (err) {
+                           res.isDir=false
+                           ;
+                           res.err=true
+                           resolve(res)
+                       }
+                       try {
+                           res.isDir=stats.isDirectory();
+                           ;
+                           resolve(res)
+                       }catch (e){
+                           res.isDir=false
+                           ;
+                           res.err=true
+                           resolve(res)
+                       }
+
+                   });
+                })
+                resPromise.push(pro)
+            }
+            Promise.all(resPromise).then(function(values) {
+                resolve1(values)
+            });
+        })
+        return rename;
     }
     //移动或者重命名
     rename(id,path,path2){

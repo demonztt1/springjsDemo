@@ -10,8 +10,13 @@ class DirCtrl {
     @Controller("/findDir")
     findDir(req, res) {
         let roots = this.ShowLetter.findDir(req.body.id, req.body.dir)
-        res.write(JSON.stringify(roots))
-        res.end();
+
+        roots.then(function (root) {
+
+            res.write(JSON.stringify(root))
+            res.end();
+        })
+
         return
 
     }
@@ -21,7 +26,11 @@ class DirCtrl {
     findRootDir(req, res) {
         let roots = this.ShowLetter.findWinLetter();
         roots.then(function (root) {
-            res.write(JSON.stringify(root))
+            let dirs=[];
+            root.forEach((dir)=>{
+                dirs.push({name:dir,isDir:true})
+            })
+            res.write(JSON.stringify(dirs))
             res.end();
         })
 

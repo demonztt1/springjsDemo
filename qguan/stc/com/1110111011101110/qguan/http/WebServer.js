@@ -13,13 +13,19 @@ class WebServer{
             var arr = [];
             var chunks;
 
-            req.on('data', buff => {
-                arr.push(buff);
-            });
-            req.on('end', () => {
-                chunks = Buffer.concat(arr);
-                done(chunks);
-            });
+
+            try {
+                req.on('data', buff => {
+                    arr.push(buff);
+                });
+                req.on('end', () => {
+                    chunks = Buffer.concat(arr);
+                    done(chunks);
+                });
+            } catch(err) {
+
+            }
+
         };
 
         http.createServer(function(req,res){
@@ -28,14 +34,24 @@ class WebServer{
      /*     req.on('data', function (thunk) {
 
             });*/
-
+            try {
                 res.setHeader("Content-Type", "application/json;charset=utf-8");
+                res.setHeader("Access-Control-Allow-Origin", "*");
                 parsePostBody(req, (chunkss) => {
                     req.body= JSON.parse( chunkss.toString() );  // 关键代码
                     this.context= ApplicationContext.getInstance()
                     this.context.findBend(req,res,null,"http")
 
                 })
+            } catch(e) {
+                console.log('  ', e,'   ', e.stack);
+                try {
+                    res.end(e.stack);
+                } catch(err) {
+
+                }
+            }
+
 
         }).listen(port);
     }

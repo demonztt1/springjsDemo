@@ -23,11 +23,14 @@ class EditableCell extends React.Component {
     renderCell = ({ getFieldDecorator }) => {
         const {
             editing,
-            dataIndex,
+            ftlName,
+            fieldType,
             title,
-            inputType,
-            record,
+            ftlPyth,
+            userId,
             index,
+            ceatelDate,
+            editingKey,
             children,
             ...restProps
         } = this.props;
@@ -60,12 +63,20 @@ class EditableCell extends React.Component {
 class EditableTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data:[], editingKey: '' };
+        this.state = { data:[{editing:1,
+                ftlName: "1",
+                fieldType: "1",
+                title: "1",
+                ftlPyth: "1",
+                userId: "1",
+                ceatelDate: "1",
+                editingKey: 10,
+            key:1}], editingKey: '' };
         this.columns = [
-            {dataIndex:'index',title:'序号',width:120,                    editable: true},
+            {dataIndex:'key',title:'序号',width:120,                    editable: true},
             {dataIndex:'ftlName',title:'项目名称',width:120,                    editable: true},
-            {dataIndex:'fieldType',title:'项目版本',width:80,align:'right',    editable: true},
-            {dataIndex:'title',title:'项目位置',width:250,                    editable: true},
+            {dataIndex:'fieldType',title:'项目版本',width:120,    editable: true},
+            {dataIndex:'ftlPyth',title:'项目位置',width:120,                    editable: true},
             {dataIndex:'userId',title:'项目说明',width:250,                    editable: true,},
             {dataIndex:'ceatelDate',title:'创建日期',width:250,                    editable: true,},
 
@@ -148,9 +159,6 @@ class EditableTable extends React.Component {
                 ...col,
                 onCell: record => ({
                     record,
-                    inputType: col.dataIndex === 'age' ? 'number' : 'text',
-                    dataIndex: col.dataIndex,
-                    title: col.title,
                     editing: this.isEditing(record),
                 }),
             };
@@ -162,7 +170,7 @@ class EditableTable extends React.Component {
                 <Table
                     components={components}
                     bordered
-                    dataSource={this.state.data}
+                    dataSource={this.props.data}
                     columns={columns}
                     rowClassName="editable-row"
                     pagination={{
@@ -174,7 +182,78 @@ class EditableTable extends React.Component {
     }
 }
 
+const EditableTableForm = Form.create()(EditableTable);
 class AdvancedSearchForm extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = { data:[{editing:1,
+                ftlName: "1",
+                fieldType: "1",
+                title: "1",
+                ftlPyth: "1",
+                userId: "1",
+                ceatelDate: "1",
+                editingKey: 10,
+                key:1},{editing:1,
+                ftlName: "1",
+                fieldType: "1",
+                title: "1",
+                ftlPyth: "1",
+                userId: "1",
+                ceatelDate: "1",
+                editingKey: 10,
+                key:2}], editingKey: '' };
+        this.columns = [
+            {dataIndex:'key',title:'序号',width:120,                    editable: true},
+            {dataIndex:'ftlName',title:'项目名称',width:120,                    editable: true},
+            {dataIndex:'fieldType',title:'项目版本',width:120,    editable: true},
+            {dataIndex:'ftlPyth',title:'项目位置',width:120,                    editable: true},
+            {dataIndex:'userId',title:'项目说明',width:250,                    editable: true,},
+            {dataIndex:'ceatelDate',title:'创建日期',width:250,                    editable: true,},
+
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                render: (text, record) => {
+                    const { editingKey } = this.state;
+                    const editable = this.isEditing(record);
+                    return editable ? (
+                        <span>
+              <EditableContext.Consumer>
+                {form => (
+                    <a
+                        href="javascript:;"
+                        onClick={() => this.save(form, record.key)}
+                        style={{ marginRight: 8 }}
+                    >
+                        Save
+                    </a>
+                )}
+              </EditableContext.Consumer>
+              <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
+                <a>Cancel</a>
+              </Popconfirm>
+            </span>
+                    ) : (
+                        <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
+                            Edit
+                        </a>
+                    );
+                },
+            },
+        ];
+    }
+
+    //添加依赖数据
+    addField = () => {
+        let _this=this
+        let data=this.state.data;
+        let index=data.length;
+         data=[...data,{"key":index+10}]
+        this.setState({data})
+    };
+
     render() {
         return (
             <Form className="ant-advanced-search-form" onSubmit={this.handleSearch}>
@@ -189,7 +268,6 @@ class AdvancedSearchForm extends React.Component {
                         <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
                             导入字段
                         </Button>
-
                     </Col>
                 </Row>
                 <Row gutter={24}>
@@ -205,7 +283,12 @@ class AdvancedSearchForm extends React.Component {
                         </Form.Item>
                     </Col>
                     <Col span={6}    >
-                        <Form.Item label={`项目位置`}>
+                        <Form.Item label={`代码目录`}>
+                            <Input className={"title"} placeholder="placeholder" />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}    >
+                        <Form.Item label={`编译目录`}>
                             <Input className={"title"} placeholder="placeholder" />
                         </Form.Item>
                     </Col>
@@ -228,7 +311,9 @@ class AdvancedSearchForm extends React.Component {
                     </Col>
                     <Divider orientation="left">依赖</Divider>
                     <Col span={24} style={{ textAlign: 'right' }}>
-                        <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
+
+
+                        <Button style={{ marginLeft: 8 }}  type="primary"  onClick	={this.addField}  >
                             添加
                         </Button>
                         <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
@@ -246,9 +331,14 @@ class AdvancedSearchForm extends React.Component {
                         <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
                             依赖冲突管理
                         </Button>
+                        <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
+                            加载顺序
+                        </Button>
                     </Col>
                     <Col span={24}    >
-                        <EditableTable/>
+                        <EditableTableForm
+                        data ={this.state.data}
+                        ></EditableTableForm>
                     </Col>
                 </Row>
 

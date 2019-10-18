@@ -466,7 +466,6 @@ class EditableTable extends React.Component {
         this.setState({
             winVisible: false,
         });
-        debugger;
         console.table("窗口关闭" +e)
     };
 

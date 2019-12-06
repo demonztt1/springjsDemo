@@ -26,7 +26,10 @@ export  default class Menu extends React.Component {
                 {key:37,pid:36,name:'张三33'},
                 {key:38,pid:0,name:'张三3',url:'',isOpen:true},
                 {key:39,pid:38,name:'张三33'},
-
+                {key:40,pid:0,name:'工作流'},
+                {key:41,pid:40,name:'模型',url:'/activiti/modelList.html'},
+                {key:42,pid:40,name:'接口',url:'/activiti/actApiList.html'},
+                {key:42,pid:40,name:'表单',url:'/activiti/actApiHtmlList.html'}
 
             ]
         };

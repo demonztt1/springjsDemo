@@ -43,7 +43,10 @@ class Index extends React.Component {
     }
 
     render() {
-        const {src} = this.props;
+        let {src,paramObj} = this.props;
+        if(paramObj==null){
+            paramObj={};
+        }
         return (
             <iframe
                 style={{width:'100%', height:this.state.iFrameHeight, overflow:'visible'}}
@@ -54,12 +57,17 @@ class Index extends React.Component {
                         "iFrameHeight":  obj.contentWindow.document.body.scrollHeight + 'px',
                         "iFrameWidth":  obj.contentWindow.document.body.scrollWidth + 'px'
                     });
+
                     obj.contentWindow.top.close=this.close.bind(this)
+
+                    obj.contentWindow.postMessage(paramObj, '*');
+                   /* if( obj.contentWindow.loder){
+                        obj.contentWindow.loder();
+                    }*/
+
                 }}
 
                 ref="iframe"
-
-
                 src={src}
                 width={this.state.iFrameWidth}
                 height={this.state.iFrameHeight}
@@ -81,7 +89,7 @@ export  default  class SeniorModal extends  React.Component{
                 footer={null}
             >
                 {this.props.children}
-                <Index  src={src} onOk={this.props.onOk}></Index>
+                <Index  src={src} onOk={this.props.onOk} paramObj={this.props.paramObj}></Index>
             </Modal>
         );
     }

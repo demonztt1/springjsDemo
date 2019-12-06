@@ -111,12 +111,39 @@ const config={
         compress:true,
         port:7070,
         host:'0.0.0.0',
-        /* proxy:{  //代理
-             "/loginController":{
-                 target:target,
-                 changeOrigin:true
-             }
-         }*/
+      proxy:{  //代理
+          '/models': {
+              target: 'http://localhost:8080/',
+              pathRewrite: {'^/models' : '/models'},
+              changeOrigin: true,     // target是域名的话，需要这个参数，
+              secure: false,          // 设置支持https协议的代理
+          },
+          '/demo': {
+              target: 'http://localhost:8080/',
+              pathRewrite: {'^/demo' : '/demo'},
+              changeOrigin: true,     // target是域名的话，需要这个参数，
+              secure: false,          // 设置支持https协议的代理
+          }
+          ,
+          '/service': {
+              target: 'http://localhost:8080/',
+              pathRewrite: {'^/service' : '/service'},
+              changeOrigin: true,     // target是域名的话，需要这个参数，
+              secure: false,          // 设置支持https协议的代理
+          }  ,
+            '/sysSms': {
+                target: 'http://localhost:8080/',
+                    pathRewrite: {'^/sysSms' : '/sysSms'},
+                changeOrigin: true,     // target是域名的话，需要这个参数，
+                    secure: false,          // 设置支持https协议的代理
+            },
+            '/workFlow': {
+                target: 'http://localhost:8080/',
+                    pathRewrite: {'^/workFlow' : '/workFlow'},
+                changeOrigin: true,     // target是域名的话，需要这个参数，
+                    secure: false,          // 设置支持https协议的代理
+            }
+         }
     }
 }
 

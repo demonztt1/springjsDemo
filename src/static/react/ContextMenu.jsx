@@ -15,7 +15,7 @@ const menusys = {
     'borderRadius':'.25rem',
     'outline': 'none',
     'textOverflow': 'ellipsis',
-    'z-index':'999'
+    'zIndex':'999'
 
 }
 

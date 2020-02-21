@@ -3,42 +3,74 @@ import { render } from 'react-dom';
 import { Button ,Menu }from 'antd';
 import 'antd/dist/antd.css';
 const { SubMenu } = Menu;
+import axios from 'axios';
+/**
+ * {key:11,pid:0,name:'生产代码',url:'/createCode/ceate.html'},
+ {key:12,pid:0,name:'模板列表',url:'/createCode/ceateFtlList.html'},
+ {key:13,pid:0,name:'字段列表',url:'/createCode/ceateFieldList.html'},
+ {key:14,pid:0,name:'生成代码',url:'/createCode/ceateList.html'},
+ {key:16,pid:0,name:'商城',url:'',isOpen:true},
+ {key:17,pid:16,name:'商品',url:'/shop/goods.html'},
+ {key:18,pid:0,name:'张三1',url:'',isOpen:true},
+ {key:19,pid:18,name:'文件夹',url:"/common/sys/dir.html"},
+ {key:20,pid:18,name:'张三11'},
+ {key:21,pid:18,name:'张三11',isOpen:true},
+ {key:22,pid:21,name:'张三11'},
+
+ {key:40,pid:0,name:'张三1',url:'/common/sys/dir.html'},
+ {key:15,pid:0,name:'qguan',url:'/react/qguan/reactEasyuiTest.html'},
+ {key:36,pid:0,name:'张三3',url:''},
+ {key:37,pid:36,name:'张三33'},
+ {key:38,pid:0,name:'张三3',url:'',isOpen:true},
+ {key:39,pid:38,name:'张三33'},
+ */
+
+
 export  default class TotalMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             mode: 'inline',
             theme: 'light',
-            nodes:[ {key:11,pid:0,name:'生产代码',url:'/createCode/ceate.html'},
-                {key:12,pid:0,name:'模板列表',url:'/createCode/ceateFtlList.html'},
-                {key:13,pid:0,name:'字段列表',url:'/createCode/ceateFieldList.html'},
-                {key:14,pid:0,name:'生成代码',url:'/createCode/ceateList.html'},
-                {key:16,pid:0,name:'商城',url:'',isOpen:true},
-                {key:17,pid:16,name:'商品',url:'/shop/goods.html'},
-                {key:18,pid:0,name:'张三1',url:'',isOpen:true},
-                {key:19,pid:18,name:'文件夹',url:"/common/sys/dir.html"},
-                {key:20,pid:18,name:'张三11'},
-                {key:21,pid:18,name:'张三11',isOpen:true},
-                {key:22,pid:21,name:'张三11'},
-
-                {key:40,pid:0,name:'张三1',url:'/common/sys/dir.html'},
-                {key:15,pid:0,name:'qguan',url:'/react/qguan/reactEasyuiTest.html'},
-                {key:36,pid:0,name:'张三3',url:''},
-                {key:37,pid:36,name:'张三33'},
-                {key:38,pid:0,name:'张三3',url:'',isOpen:true},
-                {key:39,pid:38,name:'张三33'},
+            nodes:[
 
 
             ]
         };
 
     }
+    //当组件输出到 DOM 后会执行 componentDidMount()
+    componentDidMount(){
+        const _this=this;    //先存一下this，以防使用箭头函数this会指向我们不希望它所指向的对象。
+        axios.post('/sysMenu/list')
+            .then(function (response) {
+               let data1= response.data.data
+                for(let i=0;i<data1.length;i++){
+                    data1[i].key=data1[i].id
+                }
 
+                console.table(data1)
+                _this.setState({
+                    nodes:data1
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+                _this.setState({
+                    isLoaded:false,
+                    error:error
+                })
+            })
+    }
 
 
     render() {
-        this.toTow();
-        let menu=this.ftTree (0);
+        let menu="";
+        if(this.state.nodes.length >0){
+            this.toTow();
+           menu =this.ftTree (0);
+        }
+
         return (
             <Menu  onClick={this.clickA} >
                 {menu}

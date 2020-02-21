@@ -48,7 +48,7 @@ class AdvancedSearchForm extends React.Component {
     render() {
         return (
             <Form className="ant-advanced-search-form" onSubmit={this.handleSearch}>
-ddd
+
                 <Row gutter={24}>
 
                     <Col span={8}    >

@@ -1,5 +1,6 @@
 import modelList  from './menuList.html'
-import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu} from 'antd';
+import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu ,DatePicker} from 'antd';
+import moment from 'moment';
 import { render } from 'react-dom';
 import jquery from 'jquery'
 import React, { Component } from 'react';
@@ -35,6 +36,8 @@ class Dialog extends React.Component {
     };
 
     handleOk = e => {
+
+        console.table("窗口关闭" +e)
         this.setState({
             visible: false,
         });
@@ -54,7 +57,7 @@ class Dialog extends React.Component {
                     新增根目录
                 </Button>
                 <SeniorModal style={dialogDiv}  popup="true"
-                    title="生成代码"
+                    title="添加菜单"
                              width='800'
                     visible={this.state.visible}
                     onOk={this.handleOk}
@@ -69,6 +72,66 @@ class Dialog extends React.Component {
 }
 
 const EditableContext = React.createContext();
+
+class EditableCell extends React.Component {
+    getInput = () => {
+        if (this.props.inputType === 'number') {
+            return <InputNumber />;
+        }
+        return <Input />;
+    };
+
+    fingdCell=(children,inputType)=>{
+          if("date"==inputType){
+              if(children[2]){
+                  return  moment(new Date(children[2] )).format('YYYY MM DD  HH:mm:ss');
+              }
+
+              return "" ;
+        }else {
+            return children
+        }
+
+    }
+
+    renderCell = ({ getFieldDecorator }) => {
+
+
+        const {
+            editing,
+            dataIndex,
+            title,
+            inputType,
+            record,
+            index,
+            children,
+            ...restProps
+        } = this.props;
+        return (
+            <td {...restProps}>
+                {editing ? (
+                    <Form.Item style={{ margin: 0 }}>
+                        {getFieldDecorator(dataIndex, {
+                            rules: [
+                                {
+                                    required: true,
+                                    message: `Please Input ${title}!`,
+                                },
+                            ],
+                            initialValue: record[dataIndex],
+                        })(this.getInput())}
+                    </Form.Item>
+                ) : (
+                    this.fingdCell(children,inputType)
+                )}
+            </td>
+        );
+    };
+
+    render() {
+        return <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>;
+    }
+}
 
 
 class EditableTable extends React.Component {
@@ -85,7 +148,7 @@ class EditableTable extends React.Component {
             {dataIndex:'id',title:'id',width:120,                    editable: true},
             {dataIndex:'name',title:'名称',width:120,                    editable: true},
             {dataIndex:'url',title:'连接',width:120,                    editable: true},
-            {dataIndex:'createTime',title:'创建时间',width:120,                    editable: true}
+            {dataIndex:'createTime',title:'创建时间',width:120,     inputType:"date",               editable: true}
         ];
     }
 
@@ -121,6 +184,10 @@ class EditableTable extends React.Component {
             <Menu.Item key="3" disabled>
                 查看信息
             </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="5" disabled>
+                权限设置
+            </Menu.Item>
         </Menu>)
     }
     menu= (event,record) =>{
@@ -148,6 +215,18 @@ class EditableTable extends React.Component {
      * 初始化数据
      */
     componentDidMount = () => {
+      this.  findData()
+    }
+    componentWillUnmount = () => {
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
+
+    /**
+     * 获取数据
+     */
+    findData(){
         let _this=this;
         $.ajax({
             url : "/sysMenu/list",
@@ -174,22 +253,29 @@ class EditableTable extends React.Component {
             .catch(error => {
                 alert('请求失败');
             });
-
     }
-    componentWillUnmount = () => {
-        this.setState = (state,callback)=>{
-            return;
-        };
-    }
-
     del(){
+        let _this=this;
         const selectedRowKeys = this.state.index;
-        let dataSource = this.state.data;
-        dataSource.splice(Number.parseInt(selectedRowKeys), 1);
-        this.setState({
-            data: dataSource,
-            index: []
-        })
+
+        $.ajax({
+            url : "/sysMenu/del",
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/json',
+            async: false,//同步
+            headers: {
+                //  token: getCookie('token')
+            },
+            data: JSON.stringify( {id: selectedRowKeys.id}),
+        }).then( (res) => {
+            _this.findData();
+            })
+            .catch(error => {
+                alert('请求失败');
+            });
+
+
     }
     /*获取子组件传递过来的值*/
 
@@ -200,6 +286,30 @@ class EditableTable extends React.Component {
     }
 
     render() {
+        const components = {
+            body: {
+                cell: EditableCell,
+            },
+        };
+
+        const columns = this.columns.map(col => {
+          /*  if (!col.editable) {
+                return col;
+            }*/
+            return {
+                ...col,
+                onCell: record => ({
+                    record,
+                    inputType: col.inputType   ? col.inputType: 'text',
+                    dataIndex: col.dataIndex,
+                    title: col.title,
+                    editing: this.isEditing(record),
+                }),
+            };
+        })
+        ;
+
+
         return (
             <EditableContext.Provider value={this.props.form}>
                 <ContextMenu uevent={this.state.event}
@@ -213,7 +323,7 @@ class EditableTable extends React.Component {
             </ContextMenu>
                 <SeniorModal style={dialogDiv}  popup="true"
                              title="编辑菜单"
-                             width='800'
+                             width='500'
                              visible={this.state.winVisible}
                              onOk={this.handleOk}
                              onCancel={this.handleCancel}
@@ -222,11 +332,13 @@ class EditableTable extends React.Component {
                 >
 
                 </SeniorModal>
+
+
                 <Table
-                 //  components={components}
+                  components={components}
                     bordered
                     dataSource={this.state.data}
-                    columns={this.columns}
+                    columns={columns}
                     rowClassName="editable-row"
                     pagination={{
                         onChange: this.cancel,

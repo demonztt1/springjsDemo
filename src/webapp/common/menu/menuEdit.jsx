@@ -107,10 +107,16 @@ class NormalLoginForm extends React.Component {
             },
             success : function(data) {
                 console.log("请求成功")
+                top.close(1);
 
             }
         });
     }
+        //关闭页面
+    close =()=>{
+        top.close();
+    }
+
     // 文本框内容改变时的处理函数
     txtChanged = e => {
         let _this=this;
@@ -153,7 +159,7 @@ class NormalLoginForm extends React.Component {
                     <Button type="primary"  onClick={this.ok} className="login-form-button">
                         保存
                     </Button>
-                    <Button type="primary"  className="login-form-button">
+                    <Button type="primary"  onClick={this.close} className="login-form-button">
                         关闭
                     </Button>
                 </Form.Item>

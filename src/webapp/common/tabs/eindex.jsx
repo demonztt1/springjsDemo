@@ -26,7 +26,7 @@ class Goods extends React.Component {
             goods:[1,2,3],
             data:[]
         };
-        this.findInit();
+        //this.findInit();
     }
     ajax =(url)=>{
         let res = new Promise(function(resolve, reject) {

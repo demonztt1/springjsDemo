@@ -38,7 +38,6 @@ class Index extends React.Component {
     }
 
     close =(val)=>{
-        debugger;
         this.props.onOk(val);
     }
 

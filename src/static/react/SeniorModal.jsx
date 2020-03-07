@@ -60,9 +60,6 @@ class Index extends React.Component {
                     obj.contentWindow.top.close=this.close.bind(this)
 
                     obj.contentWindow.postMessage(paramObj, '*');
-                   /* if( obj.contentWindow.loder){
-                        obj.contentWindow.loder();
-                    }*/
 
                 }}
 
@@ -86,6 +83,7 @@ export  default  class SeniorModal extends  React.Component{
                 {...this.props}
                 title={title}
                 footer={null}
+                destroyOnClose={true}
             >
                 {this.props.children}
                 <Index  src={src} onOk={this.props.onOk} paramObj={this.props.paramObj}></Index>

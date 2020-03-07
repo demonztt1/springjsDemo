@@ -1,14 +1,16 @@
-import modelList  from './menuList.html'
+import modelList  from './roleList.html'
 import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu ,DatePicker} from 'antd';
 import moment from 'moment';
 import { render } from 'react-dom';
+import jquery from 'jquery'
 import React, { Component } from 'react';
 import ContextMenu from '../../../static/react/ContextMenu.jsx';
 
 import SeniorModal from '../../../static/react/SeniorModal.jsx';
 import listToTree from '../../../static/js/tree/listToTree.js';
-import instance from '../../../static/utils/axios.config.js'
+
 import 'antd/dist/antd.css';
+import instance from "../../../static/utils/axios.config";
 const { SubMenu } = Menu;
 
 const dialogIframe = {
@@ -53,15 +55,15 @@ class Dialog extends React.Component {
         return (
             <div>
                 <Button type="primary" onClick={this.showModal} style={{ textAlign: 'right' }}>
-                    新增根目录
+                    新增角色
                 </Button>
                 <SeniorModal style={dialogDiv}  popup="true"
-                    title="添加菜单"
+                    title="新增角色"
                              width='800'
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
-                             src={"/common/menu/menuEdit.html" }
+                             src={"/system/role/roleEdit.html" }
                 >
 
                 </SeniorModal>
@@ -141,14 +143,12 @@ class EditableTable extends React.Component {
         ,  event:{},visible:false,
             winVisible:false,
             pid:"",
-            id:"",
-            paramObj:{}
+            id:""
 
         };
         this.columns = [
             {dataIndex:'id',title:'id',width:120,                    editable: true},
             {dataIndex:'name',title:'名称',width:120,                    editable: true},
-            {dataIndex:'url',title:'连接',width:120,                    editable: true},
             {dataIndex:'createTime',title:'创建时间',width:120,     inputType:"date",               editable: true}
         ];
     }
@@ -176,7 +176,7 @@ class EditableTable extends React.Component {
         return (<Menu>
             <Menu.Item key="4" onClick={this.addSun.bind(this)}>
                 <a target="_blank" rel="noopener noreferrer" >
-                    添加子菜单
+                    添加子角色
                 </a>
             </Menu.Item>
             <Menu.Item key="0" onClick={this.del.bind(this)}>
@@ -189,14 +189,13 @@ class EditableTable extends React.Component {
                     编辑
                 </a>
             </Menu.Item>
-
             <Menu.Divider />
             <Menu.Item key="3" disabled>
-                查看信息
+                配置权限
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="5" disabled>
-                权限设置
+                配置菜单
             </Menu.Item>
         </Menu>)
     }
@@ -243,8 +242,9 @@ class EditableTable extends React.Component {
      */
     findData(){
         let _this=this;
-
-        instance.post('/sysMenu/list',{}) .then((resdata) => {
+        let params = {
+        };
+        instance.post('/role/list',params) .then((resdata) => {
             for (let i=0;i<resdata.length;i++){
                 resdata[i].key=resdata[i].id;
                 resdata[i].title=resdata[i].name;
@@ -254,23 +254,27 @@ class EditableTable extends React.Component {
             _this.setState({
                 data
             });
+
         }).catch(error => {
             alert('请求失败');
         });
 
+
     }
     del(){
         let _this=this;
-        const selectedRowKeys = this.state.index;
+        const selectedRowKeys = _this.state.index;
+        let params = {
+            id: selectedRowKeys.id
+        };
+        instance.post('/role/del',params)
+            .then((data) => {
+                //此处为正常业务数据的处理
+                _this.findData();
 
-        instance.post('/sysMenu/del',{id: selectedRowKeys.id} )
-            .then((resdata) => {
-            _this.findData();
-            })
-            .catch(error => {
+            }).catch(error => {
                 alert('请求失败');
-            })
-
+            });
     }
     /*获取子组件传递过来的值*/
 
@@ -323,7 +327,7 @@ class EditableTable extends React.Component {
                              onOk={this.handleOk}
                              onCancel={this.handleCancel}
                              paramObj={{pid:this.state.pid,id:this.state.id}}
-                             src={"/common/menu/menuEdit.html" }
+                             src={"/system/role/roleEdit.html" }
                 >
 
                 </SeniorModal>

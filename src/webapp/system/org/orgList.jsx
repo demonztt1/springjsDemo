@@ -1,14 +1,16 @@
-import modelList  from './menuList.html'
-import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu ,DatePicker} from 'antd';
+import modelList  from './orgList.html'
+import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu ,DatePicker ,Checkbox} from 'antd';
 import moment from 'moment';
 import { render } from 'react-dom';
+import jquery from 'jquery'
 import React, { Component } from 'react';
 import ContextMenu from '../../../static/react/ContextMenu.jsx';
 
 import SeniorModal from '../../../static/react/SeniorModal.jsx';
 import listToTree from '../../../static/js/tree/listToTree.js';
-import instance from '../../../static/utils/axios.config.js'
+
 import 'antd/dist/antd.css';
+import instance from "../../../static/utils/axios.config";
 const { SubMenu } = Menu;
 
 const dialogIframe = {
@@ -53,15 +55,17 @@ class Dialog extends React.Component {
         return (
             <div>
                 <Button type="primary" onClick={this.showModal} style={{ textAlign: 'right' }}>
-                    新增根目录
+                    新增组织
                 </Button>
+                <Checkbox >显示用户</Checkbox>
+                <Checkbox >显示角色</Checkbox>
                 <SeniorModal style={dialogDiv}  popup="true"
-                    title="添加菜单"
-                             width='800'
+                    title="新增组织"
+                             width='500px'
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
-                             src={"/common/menu/menuEdit.html" }
+                             src={"/system/org/orgEdit.html" }
                 >
 
                 </SeniorModal>
@@ -140,15 +144,15 @@ class EditableTable extends React.Component {
         this.state = { data:[], editingKey: ''
         ,  event:{},visible:false,
             winVisible:false,
+            userWinVisible:false,
+            roleWinVisible:false,
             pid:"",
-            id:"",
-            paramObj:{}
+            id:""
 
         };
         this.columns = [
             {dataIndex:'id',title:'id',width:120,                    editable: true},
             {dataIndex:'name',title:'名称',width:120,                    editable: true},
-            {dataIndex:'url',title:'连接',width:120,                    editable: true},
             {dataIndex:'createTime',title:'创建时间',width:120,     inputType:"date",               editable: true}
         ];
     }
@@ -163,20 +167,52 @@ class EditableTable extends React.Component {
         })
     }
 
-
-    handleOk = e => {
-
-        console.table("窗口关闭" +e)
+    handleCancel = e => {
         this.setState({
             winVisible: false,
+            userWinVisible:false,
+            roleWinVisible:false
         });
     };
+    handleOk = e => {
+
+        this.setState({
+            winVisible: false,
+            userWinVisible:false,
+            roleWinVisible:false
+        });
+    };
+    // 给分组 编辑 添加用户和权限
+    userEdit(){
+        let _this=this;
+        const reds = this.state.index;
+        _this.setState({
+            userWinVisible: true,
+            id:reds.id
+        })
+    }
+    roleEdit(){
+        let _this=this;
+        const reds = this.state.index;
+        _this.setState({
+            roleWinVisible: true,
+            id:reds.id
+        })
+    }
+    addUser(){
+        let _this=this;
+        const reds = this.state.index;
+        _this.setState({
+            userWinVisible: true,
+            id:reds.id
+        })
+    }
 
     findMenu(){
         return (<Menu>
             <Menu.Item key="4" onClick={this.addSun.bind(this)}>
                 <a target="_blank" rel="noopener noreferrer" >
-                    添加子菜单
+                    添加下级
                 </a>
             </Menu.Item>
             <Menu.Item key="0" onClick={this.del.bind(this)}>
@@ -191,13 +227,21 @@ class EditableTable extends React.Component {
             </Menu.Item>
 
             <Menu.Divider />
-            <Menu.Item key="3" disabled>
-                查看信息
+            <Menu.Item key="3"  onClick={this.addUser.bind(this)}>
+                添加用户
             </Menu.Item>
+            <Menu.Item key="5"  onClick={this.roleEdit.bind(this)}>
+                编辑用户角色
+            </Menu.Item>
+            <Menu.Item key="7"  onClick={this.userEdit.bind(this)}>
+                删除用户
+            </Menu.Item>
+
             <Menu.Divider />
-            <Menu.Item key="5" disabled>
-                权限设置
+            <Menu.Item key="6"  onClick={this.roleEdit.bind(this)}>
+                批量替换分组角色
             </Menu.Item>
+
         </Menu>)
     }
     menu= (event,record) =>{
@@ -243,8 +287,10 @@ class EditableTable extends React.Component {
      */
     findData(){
         let _this=this;
+        let params = {
+        };
+        instance.post('/org/list',params) .then((resdata) => {
 
-        instance.post('/sysMenu/list',{}) .then((resdata) => {
             for (let i=0;i<resdata.length;i++){
                 resdata[i].key=resdata[i].id;
                 resdata[i].title=resdata[i].name;
@@ -254,23 +300,27 @@ class EditableTable extends React.Component {
             _this.setState({
                 data
             });
+
         }).catch(error => {
             alert('请求失败');
         });
 
+
     }
     del(){
         let _this=this;
-        const selectedRowKeys = this.state.index;
+        const selectedRowKeys = _this.state.index;
+        let params = {
+            id: selectedRowKeys.id
+        };
+        instance.post('/org/del',params)
+            .then((data) => {
+                //此处为正常业务数据的处理
+                _this.findData();
 
-        instance.post('/sysMenu/del',{id: selectedRowKeys.id} )
-            .then((resdata) => {
-            _this.findData();
-            })
-            .catch(error => {
+            }).catch(error => {
                 alert('请求失败');
-            })
-
+            });
     }
     /*获取子组件传递过来的值*/
 
@@ -317,16 +367,33 @@ class EditableTable extends React.Component {
 
             </ContextMenu>
                 <SeniorModal style={dialogDiv}  popup="true"
-                             title="编辑菜单"
+                             title="编辑分组"
                              width='500'
                              visible={this.state.winVisible}
                              onOk={this.handleOk}
                              onCancel={this.handleCancel}
                              paramObj={{pid:this.state.pid,id:this.state.id}}
-                             src={"/common/menu/menuEdit.html" }
-                >
+                             src={"/system/org/orgEdit.html" }
+                />
+                <SeniorModal style={dialogDiv}  popup="true"
+                             title="添加用户"
+                             width='500'
+                             visible={this.state.userWinVisible}
+                             onOk={this.handleOk}
+                             onCancel={this.handleCancel}
+                             paramObj={{pid:this.state.pid,id:this.state.id}}
+                             src={"/system/org/addUserEdit.html" }
+                />
+                <SeniorModal style={dialogDiv}  popup="true"
+                             title="编辑用户角色"
+                             width='500'
+                             visible={this.state.roleWinVisible}
+                             onOk={this.handleOk}
+                             onCancel={this.handleCancel}
+                             paramObj={{pid:this.state.pid,id:this.state.id}}
+                             src={"/system/org/userRoleEdit.html" }
+                />
 
-                </SeniorModal>
 
 
                 <Table

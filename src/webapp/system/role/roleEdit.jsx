@@ -1,11 +1,10 @@
-import html  from './menuEdit.html'
+import html  from './roleEdit.html'
 import { Icon, Input,Form ,Button,Select,DatePicker,TreeSelect  } from 'antd';
 import { render } from 'react-dom';
 import React, { Component } from 'react';
 import 'antd/dist/antd.css';
-
-import instance from '../../../static/utils/axios.config.js'
 import listToTree from "../../../static/js/tree/listToTree";
+import instance from "../../../static/utils/axios.config";
 const { RangePicker } = DatePicker;
 const formItemLayout = {
     labelCol: { span: 4 },
@@ -25,10 +24,9 @@ class NormalLoginForm extends React.Component {
      * 初始化数据
      */
     componentDidMount = () => {
-
         let _this=this;
 
-        instance.post('/sysMenu/list',{} )
+        instance.post('/role/list',{} )
             .then((resdata) => {
                 for (let i=0;i<resdata.length;i++){
                     resdata[i].key=resdata[i].id;
@@ -41,8 +39,9 @@ class NormalLoginForm extends React.Component {
                 });
             })
             .catch(error => {
-                    alert('请求失败');
+                alert('请求失败');
             })
+
 
         window.receiveMessageFromIndex = function ( event ) {
             if(event!=undefined){
@@ -79,7 +78,7 @@ class NormalLoginForm extends React.Component {
     };
     ok = e =>{
         let _this=this;
-        instance.post('/sysMenu/save',_this.state.data)
+        instance.post('/role/save',_this.state.data)
             .then((resdata) => {
                 top.close(1);
             })
@@ -109,12 +108,6 @@ class NormalLoginForm extends React.Component {
                 <Form.Item label="名称"  {...formItemLayout}>
                     <Input id={"name"} value={this.state.data.name} onChange={ e => this.txtChanged(e) }
                            prefix={<Icon type="name"   style={{ color: 'rgba(0,0,0,.25)' }} />}
-                           placeholder="name"
-                    />
-                </Form.Item>
-                <Form.Item label="链接"  {...formItemLayout}>
-                    <Input id={"url"} value={this.state.data.url} onChange={ e => this.txtChanged(e) }
-                           prefix={<Icon type="list"   style={{ color: 'rgba(0,0,0,.25)' }} />}
                            placeholder="name"
                     />
                 </Form.Item>

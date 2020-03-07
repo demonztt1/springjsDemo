@@ -57,15 +57,16 @@ export  default class ContextMenu extends React.Component {
 
     };
     render=()=> {
-        let menuStyles={}
+        let menuStyles={display:'none'}
         const { visible, uevent} = this.props;
         if(visible){
             this.showContextMenu(event)
             menuStyles =this.getMousePosition(event)
         }
+
         Object.assign(menuStyles, menusys);
         return (
-            <Menu  style={menuStyles} visible={visible}>
+            <Menu  style={menuStyles} visible={false}>
                 {this.props.vuale}
             </Menu>
        ) ;

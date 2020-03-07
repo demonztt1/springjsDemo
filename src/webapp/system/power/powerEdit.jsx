@@ -1,10 +1,8 @@
-import html  from './menuEdit.html'
+import html  from './powerEdit.html'
 import { Icon, Input,Form ,Button,Select,DatePicker,TreeSelect  } from 'antd';
 import { render } from 'react-dom';
 import React, { Component } from 'react';
 import 'antd/dist/antd.css';
-
-import instance from '../../../static/utils/axios.config.js'
 import listToTree from "../../../static/js/tree/listToTree";
 const { RangePicker } = DatePicker;
 const formItemLayout = {
@@ -25,24 +23,35 @@ class NormalLoginForm extends React.Component {
      * 初始化数据
      */
     componentDidMount = () => {
-
         let _this=this;
+        $.ajax({
+            url : "/sysMenu/list",
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/json',
+            async: false,//同步
+            headers: {
+                //  token: getCookie('token')
+            },
+            data: JSON.stringify( { }),
+        }).then( (res) => {
+            let resdata=res.data;
+            for (let i=0;i<resdata.length;i++){
+                resdata[i].key=resdata[i].id;
+                resdata[i].title=resdata[i].name;
+                resdata[i].value=resdata[i].id;
+            }
+            let data=new listToTree(resdata).totree();
 
-        instance.post('/sysMenu/list',{} )
-            .then((resdata) => {
-                for (let i=0;i<resdata.length;i++){
-                    resdata[i].key=resdata[i].id;
-                    resdata[i].title=resdata[i].name;
-                    resdata[i].value=resdata[i].id;
-                }
-                let data=new listToTree(resdata).totree();
-                _this.setState({
-                    treeData:data
-                });
-            })
+
+            _this.setState({
+                treeData:data
+            });
+        })
             .catch(error => {
-                    alert('请求失败');
-            })
+                alert('请求失败');
+            });
+
 
         window.receiveMessageFromIndex = function ( event ) {
             if(event!=undefined){
@@ -79,13 +88,27 @@ class NormalLoginForm extends React.Component {
     };
     ok = e =>{
         let _this=this;
-        instance.post('/sysMenu/save',_this.state.data)
-            .then((resdata) => {
-                top.close(1);
-            })
-            .catch(error => {
+        $.ajax({
+
+            url: "/sysMenu/save" ,
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/json',
+            async: false,//同步
+            headers: {
+              //  token: getCookie('token')
+            },
+            data: JSON.stringify( _this.state.data),
+
+            error : function() {
                 alert('请求失败');
-            })
+            },
+            success : function(data) {
+                console.log("请求成功")
+                top.close(1);
+
+            }
+        });
     }
         //关闭页面
     close =()=>{

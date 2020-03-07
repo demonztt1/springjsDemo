@@ -1,14 +1,18 @@
-import modelList  from './menuList.html'
+import userList  from './userList.html'
+
+
 import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu ,DatePicker} from 'antd';
 import moment from 'moment';
 import { render } from 'react-dom';
 import React, { Component } from 'react';
+
+import 'antd/dist/antd.css';
+
+import instance from '../../../static/utils/axios.config.js'
 import ContextMenu from '../../../static/react/ContextMenu.jsx';
 
 import SeniorModal from '../../../static/react/SeniorModal.jsx';
-import listToTree from '../../../static/js/tree/listToTree.js';
-import instance from '../../../static/utils/axios.config.js'
-import 'antd/dist/antd.css';
+
 const { SubMenu } = Menu;
 
 const dialogIframe = {
@@ -35,8 +39,6 @@ class Dialog extends React.Component {
     };
 
     handleOk = e => {
-
-        console.table("窗口关闭" +e)
         this.setState({
             visible: false,
         });
@@ -53,15 +55,15 @@ class Dialog extends React.Component {
         return (
             <div>
                 <Button type="primary" onClick={this.showModal} style={{ textAlign: 'right' }}>
-                    新增根目录
+                    新增用户
                 </Button>
                 <SeniorModal style={dialogDiv}  popup="true"
-                    title="添加菜单"
-                             width='800'
+                    title="新增用户"
+                             width='500px'
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
-                             src={"/common/menu/menuEdit.html" }
+                             src={"/system/user/userEdit.html" }
                 >
 
                 </SeniorModal>
@@ -141,25 +143,33 @@ class EditableTable extends React.Component {
         ,  event:{},visible:false,
             winVisible:false,
             pid:"",
-            id:"",
-            paramObj:{}
+            id:""
 
         };
         this.columns = [
             {dataIndex:'id',title:'id',width:120,                    editable: true},
-            {dataIndex:'name',title:'名称',width:120,                    editable: true},
+            {dataIndex:'username',title:'名称',width:120,                    editable: true},
             {dataIndex:'url',title:'连接',width:120,                    editable: true},
             {dataIndex:'createTime',title:'创建时间',width:120,     inputType:"date",               editable: true}
         ];
-    }
 
-    //添加子菜单
-    addSun(){
-        let _this=this;
-        const reds = this.state.index;
-        _this.setState({
-             winVisible:true,
-             pid:reds.id
+        this.del= this.del.bind(this)
+    }
+    /**
+     * 初始化数据
+     */
+    componentDidMount = () => {
+        this.  findData();
+    }
+    componentWillUnmount = () => {
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
+    /*获取子组件传递过来的值*/
+    changeStatus = (status) =>{
+        this.setState({
+            visible:status
         })
     }
 
@@ -173,37 +183,79 @@ class EditableTable extends React.Component {
     };
 
     findMenu(){
+        let _this=this;
         return (<Menu>
-            <Menu.Item key="4" onClick={this.addSun.bind(this)}>
+            <Menu.Item key="4" onClick={_this.addSun.bind(_this)}>
                 <a target="_blank" rel="noopener noreferrer" >
                     添加子菜单
                 </a>
             </Menu.Item>
-            <Menu.Item key="0" onClick={this.del.bind(this)}>
-                <a target="_blank" rel="noopener noreferrer" >
+            <Menu.Item key="0" onClick={()=>{
+                debugger;
+                _this.del.bind(_this)}}>
+                <a target="_blank" rel="noopener noreferrer"       >
                     删除
                 </a>
             </Menu.Item>
-            <Menu.Item key="1"  onClick={this.edit.bind(this)} >
-                <a target="_blank" rel="noopener noreferrer">
+            <Menu.Item key="1"   >
+                <a target="_blank"   onClick={    _this.del}   rel="noopener noreferrer">
                     编辑
                 </a>
             </Menu.Item>
-
+            <Menu.Item key="6" disabled>
+                重置密码
+            </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="3" disabled>
-                查看信息
+                详细信息
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="5" disabled>
-                权限设置
+                权限信息
             </Menu.Item>
         </Menu>)
     }
     menu= (event,record) =>{
-        this.setState({event:event,
-            visible: true,index:record})
+        this.setState({
+            event:event,
+            visible: true,
+            index:record
+        })
     }
+
+    /**
+     * 获取数据
+     */
+    findData(){
+        let _this=this;
+        let params = {
+        };
+        instance.post('/user/list',params) .then((data) => {
+            //此处为正常业务数据的处理
+            for (let i=0;i<data.length;i++){
+                data[i].key=data[i].id;
+            }
+            _this.setState({data})
+
+        }).catch(error => {
+            alert('请求失败');
+        });
+
+    }
+
+
+
+
+    //添加子菜单
+    addSun(){
+        let _this=this;
+        const reds = this.state.index;
+        _this.setState({
+             winVisible:true,
+             pid:reds.id
+        })
+    }
+
 
 
     isEditing = record => record.key === this.state.editingKey;
@@ -213,12 +265,29 @@ class EditableTable extends React.Component {
     };
 
 
+    del(){
+        alert('请求失败');
+        debugger;
+        const selectedRowKeys = this.state.index;
+        let _this=this;
+        let params = {
+            id: selectedRowKeys.id
+        };
+        instance.post('/user/del',params) .then((resdata) => {
+            _this.findData();
+
+        }).catch(error => {
+            alert('请求失败');
+        });
+
+    }
+
 
     edit =()=>{
+        debugger;
         let _this=this;
         let  selectedRowKeys= this.state.index;
         let id = selectedRowKeys.id;
-
         _this.setState({
             winVisible:true,
             id:selectedRowKeys.id
@@ -226,61 +295,10 @@ class EditableTable extends React.Component {
     }
 
 
-    /**
-     * 初始化数据
-     */
-    componentDidMount = () => {
-      this.  findData()
-    }
-    componentWillUnmount = () => {
-        this.setState = (state,callback)=>{
-            return;
-        };
-    }
 
-    /**
-     * 获取数据
-     */
-    findData(){
-        let _this=this;
-
-        instance.post('/sysMenu/list',{}) .then((resdata) => {
-            for (let i=0;i<resdata.length;i++){
-                resdata[i].key=resdata[i].id;
-                resdata[i].title=resdata[i].name;
-                resdata[i].value=resdata[i].id;
-            }
-            let data=new listToTree(resdata).totree();
-            _this.setState({
-                data
-            });
-        }).catch(error => {
-            alert('请求失败');
-        });
-
-    }
-    del(){
-        let _this=this;
-        const selectedRowKeys = this.state.index;
-
-        instance.post('/sysMenu/del',{id: selectedRowKeys.id} )
-            .then((resdata) => {
-            _this.findData();
-            })
-            .catch(error => {
-                alert('请求失败');
-            })
-
-    }
-    /*获取子组件传递过来的值*/
-
-    changeStatus = (status) =>{
-        this.setState({
-            visible:status
-        })
-    }
 
     render() {
+        let _this=this;
         const components = {
             body: {
                 cell: EditableCell,
@@ -304,26 +322,25 @@ class EditableTable extends React.Component {
         })
         ;
 
-
         return (
-            <EditableContext.Provider value={this.props.form}>
-                <ContextMenu uevent={this.state.event}
-                                             status={this.changeStatus}
-                                             vuale={this.findMenu()}
-                                             del={this.del}
-                                             index={this.index}
-                                             visible={this.state.visible}>
+            <EditableContext.Provider value={_this.props.form}>
+                <ContextMenu uevent={_this.state.event}
+                                             status={_this.changeStatus}
+                                             vuale={_this.findMenu()}
+                                             del={_this.del}
+                                             index={_this.index}
+                                             visible={_this.state.visible}>
 
 
             </ContextMenu>
                 <SeniorModal style={dialogDiv}  popup="true"
                              title="编辑菜单"
                              width='500'
-                             visible={this.state.winVisible}
-                             onOk={this.handleOk}
-                             onCancel={this.handleCancel}
-                             paramObj={{pid:this.state.pid,id:this.state.id}}
-                             src={"/common/menu/menuEdit.html" }
+                             visible={_this.state.winVisible}
+                             onOk={_this.handleOk}
+                             onCancel={_this.handleCancel}
+                             paramObj={{id:_this.state.id}}
+                             src={"/system/user/userEdit.html" }
                 >
 
                 </SeniorModal>
@@ -332,16 +349,16 @@ class EditableTable extends React.Component {
                 <Table
                   components={components}
                     bordered
-                    dataSource={this.state.data}
+                    dataSource={_this.state.data}
                     columns={columns}
                     rowClassName="editable-row"
                     pagination={{
-                        onChange: this.cancel,
+                        onChange: _this.cancel,
                     }}
                     onRow={(record, index) => {
                         return {
                             onContextMenu: event => {
-                                this.menu(event ,record)
+                                _this.menu(event ,record)
                             },
                         };
                     }}

@@ -462,7 +462,6 @@ class EditableTable extends React.Component {
 
     handleOk = e => {
         const selectedRowKeys = this.state.index;
-        console.log(selectedRowKeys);
         this.setState({
             winVisible: false,
         });

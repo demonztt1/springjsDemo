@@ -1,13 +1,14 @@
-import modelList  from './menuList.html'
+import modelList  from './ftlList.html'
 import { Modal,Table, Input, InputNumber, Popconfirm, Form ,Button, Icon, Switch,Menu ,DatePicker} from 'antd';
 import moment from 'moment';
 import { render } from 'react-dom';
+import jquery from 'jquery'
 import React, { Component } from 'react';
 import ContextMenu from '../../../static/react/ContextMenu.jsx';
 
 import SeniorModal from '../../../static/react/SeniorModal.jsx';
 import listToTree from '../../../static/js/tree/listToTree.js';
-import instance from '../../../static/utils/axios.config.js'
+
 import 'antd/dist/antd.css';
 const { SubMenu } = Menu;
 
@@ -141,8 +142,7 @@ class EditableTable extends React.Component {
         ,  event:{},visible:false,
             winVisible:false,
             pid:"",
-            id:"",
-            paramObj:{}
+            id:""
 
         };
         this.columns = [
@@ -243,8 +243,18 @@ class EditableTable extends React.Component {
      */
     findData(){
         let _this=this;
-
-        instance.post('/sysMenu/list',{}) .then((resdata) => {
+        $.ajax({
+            url : "/sysMenu/list",
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/json',
+            async: false,//同步
+            headers: {
+                //  token: getCookie('token')
+            },
+            data: JSON.stringify( { }),
+        }).then( (res) => {
+            let resdata=res.data;
             for (let i=0;i<resdata.length;i++){
                 resdata[i].key=resdata[i].id;
                 resdata[i].title=resdata[i].name;
@@ -254,22 +264,32 @@ class EditableTable extends React.Component {
             _this.setState({
                 data
             });
-        }).catch(error => {
-            alert('请求失败');
-        });
-
+        })
+            .catch(error => {
+                alert('请求失败');
+            });
     }
     del(){
         let _this=this;
         const selectedRowKeys = this.state.index;
 
-        instance.post('/sysMenu/del',{id: selectedRowKeys.id} )
-            .then((resdata) => {
+        $.ajax({
+            url : "/sysMenu/del",
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/json',
+            async: false,//同步
+            headers: {
+                //  token: getCookie('token')
+            },
+            data: JSON.stringify( {id: selectedRowKeys.id}),
+        }).then( (res) => {
             _this.findData();
             })
             .catch(error => {
                 alert('请求失败');
-            })
+            });
+
 
     }
     /*获取子组件传递过来的值*/
